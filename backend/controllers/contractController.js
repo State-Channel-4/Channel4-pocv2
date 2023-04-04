@@ -135,18 +135,53 @@ const vote = async (req, res) => {
 
 const submit_url = async(req, res) => {
   try {
-    const { title, url, submittedBy } = req.body; // Get the title, URL, and submitter from the request body
+    const { title, url, submittedBy, tags } = req.body; // Get the title, URL, and submitter from the request body
     const existingUrl = await Url.findOne({ url }); // Check if the URL already exists in the database
     if (existingUrl) {
       return res.status(400).json({ error: 'URL already exists' });
     }
-    const newUrl = await Url.create({ title, url, submittedBy }); // Create a new URL document in the database
+    const newUrl = await Url.create({ title: title, url: url, submittedBy: submittedBy, tags: tags }); // Create a new URL document in the database
+
+    // add the url to the corresponding tags
+    for(let i = 0; i < tags.length; i++) {
+      const tag_id = tags[i]
+      // find the tag document
+      let tag_doc = await Tag.findById(tag_id)
+      tag_doc.urls.push(newUrl.id)
+      // Save the tag document to the database
+      await tag_doc.save()
+    }
     return res.status(201).json(newUrl);
   } catch (err) {
     console.error(err);
     return res.status(500).json({ error: 'Server error' });
   }
 };
+
+// delete url
+const delete_url = async(req, res) => {
+  try {
+    const {id} = req.body
+    const del_url = await Url.deleteOne({"_id": id})
+    return res.status(200).json(del_url)
+  } catch(error) {
+    return res.status(500).json({error : error.message})
+  }
+}
+
+// creating tags
+const create_tag = async(req, res) => {
+  try {
+    // name createdby
+    const {name, createdBy} = req.body
+    const tag = await Tag.create({name: name, createdBy: createdBy})
+    res.status(200).json({tag: tag})
+  } catch (error) {
+    console.log(error)
+    return res.status(500).json({error : error.message})
+  }
+}
+
 
 
 module.exports = {
@@ -155,5 +190,7 @@ module.exports = {
     vote,
     submit_url,
     get_all_users,
-    get_specific_user
+    get_specific_user,
+    create_tag,
+    delete_url
 }
