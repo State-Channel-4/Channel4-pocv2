@@ -25,8 +25,13 @@ router.post('/url', cc.submit_url)
 // delete url
 router.delete('/url', cc.delete_url)
 
+
 // creating tags
 router.post('/tag', cc.create_tag)
+
+// fetch url by tags
+router.get('/url/tag', cc.getUrlsByTags)
+
 
 // switch aka get random url from smart contract
 

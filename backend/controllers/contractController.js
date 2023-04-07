@@ -44,6 +44,16 @@ const get_all_users = async(req, res) => {
 }
 
 // get user by id
+/**
+ * 
+ * @param {object} req request object
+ * @param {object} res response object
+ * how to call
+ * {
+ * localhost:4000/api/user/:id
+ * localhost:4000/api/user:/123
+ * }
+ */
 const get_specific_user = async(req, res) => {
   console.log("get user by id : ", req.params.id)
   try {
@@ -118,6 +128,19 @@ const downvoteUrl = async (req, res) => {
   }
 
 // vote
+/**
+ * 
+ * @param {object} req 
+ * @param {object} res 
+ * @returns json
+ * how to call
+ * PUT localhost:4000/api/vote/id
+ * expected json body in request
+ {
+ "address": "0x72....."
+ "vote": "upvote"/"downvote"
+ }
+ */
 const vote = async (req, res) => {
   const {id} = req.params
   console.log("id : ", id)
@@ -133,6 +156,21 @@ const vote = async (req, res) => {
   }
 }
 
+/**
+ * 
+ * @param {object} req 
+ * @param {object} res 
+ * @returns json
+ * how to call
+ * POST localhost:4000/api/url
+ * expected json body in request
+ {
+  "title": "",
+  "url": "",
+  "submittedBy" : "user_id not walletaddress",
+  "tags": []
+ }
+ */
 const submit_url = async(req, res) => {
   try {
     const { title, url, submittedBy, tags } = req.body; // Get the title, URL, and submitter from the request body
@@ -182,6 +220,18 @@ const create_tag = async(req, res) => {
   }
 }
 
+const getUrlsByTags = async(req, res) => {
+  try {
+    const {tags} = req.body
+    // Find URLs that have tags that match the extracted tag IDs
+    const urls = await Url.find({ tags: { $in: tags } }, { _id: 1, url: 1 });
+    return res.status(200).json({urls: urls})
+  } catch(error) {
+    console.log(error)
+    return res.status(500).json({error: error.message})
+  }
+}
+
 
 
 module.exports = {
@@ -192,5 +242,6 @@ module.exports = {
     get_all_users,
     get_specific_user,
     create_tag,
-    delete_url
+    delete_url,
+    getUrlsByTags
 }
