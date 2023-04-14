@@ -9,11 +9,10 @@ const TagList = ({tags, title}) => {
     return (
         <div className="tag-list">
             <h2>{title}</h2>
-            {tags.map(tag => (
-            <div className="tag-preview" key={tag.id} >
-                <input type="checkbox"
-                value={tag.id}>{title}
-                </input>
+            {tags.tags.map((tag, index) => (
+            <div className="tag-preview" key={`${tag.id}-${index}`} >
+                <input type="checkbox" value={tag.id} />
+                <label>{tag.name}</label>
             </div>
             ))}
         </div>
