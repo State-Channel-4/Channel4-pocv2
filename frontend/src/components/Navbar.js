@@ -19,7 +19,7 @@ const Navbar = () => {
         <h1>Channel4</h1>
         <div className="links">
         <NavLink to="/" activeClassName="navbar-link-active">Home</NavLink>
-        <NavLink to="/submit-url">Submit url</NavLink>
+        {isLoggedIn && <NavLink to="/submit-url">Submit url</NavLink>}
         {isLoggedIn && 
           <button
           onClick={() => {
