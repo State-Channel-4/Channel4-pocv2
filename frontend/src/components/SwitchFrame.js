@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import './SwitchFrame.css';
 
-const SwitchFrame = ({ initialUrl, urlId, userAddress }) => {
+const SwitchFrame = ({ taglist, initialUrl, urlId, userAddress }) => {
   const [currentUrl, setCurrentUrl] = useState(initialUrl);
 
   const handleVote = async (voteType) => {

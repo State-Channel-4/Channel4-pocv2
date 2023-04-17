@@ -1,12 +1,12 @@
 import { useEffect, useState } from "react";
-import { Link, NavLink, useNavigate } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 
 const Navbar = () => {
   const [isLoggedIn, setLogin] = useState();
   const [change, setChange] = useState(false);
   const navigate = useNavigate()
   useEffect(() => {
-    if (localStorage.getItem("address") !== null) {
+    if (localStorage.getItem("user") !== null) {
       setLogin(true);
     } else {
       setLogin(false);
@@ -20,10 +20,11 @@ const Navbar = () => {
         <div className="links">
         <NavLink to="/" activeClassName="navbar-link-active">Home</NavLink>
         {isLoggedIn && <NavLink to="/submit-url">Submit url</NavLink>}
+        {isLoggedIn && <NavLink to="/submit-tag">Submit tag</NavLink>}
         {isLoggedIn && 
           <button
           onClick={() => {
-          localStorage.removeItem("address");
+          localStorage.removeItem("user");
           setChange((change) => !change);
           navigate('/')
           }}>
