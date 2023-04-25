@@ -5,6 +5,9 @@ require('dotenv').config()
 // Models
 const { User, Tag, Url } = require('../models/schema');
 
+const { generateToken } = require('../middleware/auth');
+
+
 const create_contract = () => {
     const provider = new ethers.JsonRpcProvider(process.env.RPC_URL)
     const contract = new ethers.Contract(process.env.CONTRACT_ADDRESS, process.env.ABI, provider)
@@ -24,7 +27,12 @@ const create_user = async(req, res) => {
     // add public key to database
     try {
         const user = await User.create({walletAddress: walletAddress})
-        res.status(200).json({user: user, mnemonic: wallet.mnemonic.phrase, PrivateKey: wallet.privateKey})
+        const token = generateToken(user);
+        res.status(200).json({
+          user: user,
+          token,
+          mnemonic: wallet.mnemonic.phrase,
+          PrivateKey: wallet.privateKey})
       } catch (error) {
         res.status(400).json({ error: error.message })
       }
@@ -41,6 +49,25 @@ const get_all_users = async(req, res) => {
     res.status(400).json({error: error.message})
   }
   
+}
+
+// login
+const login = async(req, res) => {
+  try{
+    const {private_key} = req.body
+    const wallet = new ethers.Wallet(private_key);
+    const user = await User.findOne({walletAddress: wallet.address })
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' })
+    }
+    console.log("user : ", user)
+    const token = generateToken(user)
+    console.log("token : ", token)
+    return res.status(200).json({user: user, token: token})
+  } catch(error) {
+    return res.status(500).json({error : error.message})
+
+  }
 }
 
 // get user by id
@@ -233,9 +260,21 @@ const getUrlsByTags = async(req, res) => {
 }
 
 
+const test = async(req, res) => {
+  try {
+    const {private_key} = req.body
+    const wallet = new ethers.Wallet(private_key);
+    console.log(wallet)
+    return res.status(200).json({wallet: wallet})
+  } catch(error) {
+    return res.status(500).json({error: error.message})
+  }
+}
+
 
 module.exports = {
     create_user,
+    login,
     recover_key,
     vote,
     submit_url,
@@ -243,5 +282,6 @@ module.exports = {
     get_specific_user,
     create_tag,
     delete_url,
-    getUrlsByTags
+    getUrlsByTags,
+    test
 }
