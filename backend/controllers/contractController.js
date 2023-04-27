@@ -22,6 +22,8 @@ const create_user = async(req, res) => {
     console.log('address:', wallet.address)
     console.log('mnemonic:', wallet.mnemonic.phrase)
     console.log('privateKey:', wallet.privateKey)
+    console.log("wallet : ", wallet)
+    console.log("object keys", Object.keys(wallet))
     const walletAddress = wallet.address
 
     // add public key to database
@@ -97,9 +99,12 @@ const recover_key = async(req, res) => {
     const { mnemonic } = req.body
     try {
         console.log("mnemonic : ", mnemonic)
-        const mnemonicWallet = ethers.Wallet.fromMnemonic(mnemonic);
-        console.log(mnemonicWallet.privateKey)
-        res.status(200).json({user: mnemonicWallet})
+        const mnemonicWallet = ethers.Wallet.fromPhrase(mnemonic);
+        console.log("private key : ", mnemonicWallet.privateKey)
+        res.status(200).json({address: mnemonicWallet.address,
+                              public_key: mnemonicWallet.publicKey,
+                              private_key: mnemonicWallet.privateKey},
+                              )
     } catch(error) {
         res.status(400).json({error: error.message})
     }

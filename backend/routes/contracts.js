@@ -8,9 +8,6 @@ const router = express.Router()
 // create user
 router.post('/user', cc.create_user)
 
-// test
-router.post('/test', cc.test)
-
 // login
 router.post('/login', cc.login)
 
