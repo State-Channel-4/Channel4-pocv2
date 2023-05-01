@@ -95,7 +95,7 @@ const get_specific_user = async(req, res) => {
 
 
 // recover using mnemonic phrase
-const recover_key = async(req, res) => {
+const recover_account = async(req, res) => {
     const { mnemonic } = req.body
     try {
         console.log("mnemonic : ", mnemonic)
@@ -280,7 +280,7 @@ const test = async(req, res) => {
 module.exports = {
     create_user,
     login,
-    recover_key,
+    recover_account,
     vote,
     submit_url,
     get_all_users,

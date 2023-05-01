@@ -18,7 +18,7 @@ router.get('/users', authenticate, cc.get_all_users)
 router.get('/user/:id', authenticate, cc.get_specific_user)
 
 // recover key
-router.post('/recover_key', cc.recover_key)
+router.post('/recover_account', cc.recover_account)
 
 // vote upvote or downvote
 router.put('/vote/:id', authenticate, cc.vote)
