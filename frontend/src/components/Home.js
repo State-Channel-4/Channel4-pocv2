@@ -2,7 +2,8 @@ import useFetch from "../hooks/useFetch";
 import TagList from "../components/TagList"
 
 const Home = () => {
-  const { error, isPending, data: tags } = useFetch('https://grove-instinctive-responsibility.glitch.me/api/tag')
+  const get_tags_url = process.env.REACT_APP_API_URL + "tag"
+  const { error, isPending, data: tags } = useFetch(get_tags_url)
   console.log("tags : ", tags)
 
   return (

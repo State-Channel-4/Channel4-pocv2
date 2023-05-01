@@ -9,8 +9,9 @@ const Login = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
     const address = { walletAddress };
+    const login_url = process.env.REACT_APP_API_URL + "login"
 
-    fetch("https://grove-instinctive-responsibility.glitch.me/api/login", {
+    fetch(login_url, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(address),
@@ -39,7 +40,7 @@ const Login = () => {
       </form>
       <button
         onClick={() => {
-          navigate("/");
+          navigate("/recover-account");
         }}
       >
         Recover Account

@@ -25,7 +25,8 @@ const SignUp = () => {
   const [isPending, setIsPending] = useState(true);
 
   const create_user = () => {
-    fetch("https://grove-instinctive-responsibility.glitch.me/api/user", {
+    const signup_url = process.env.REACT_APP_API_URL + "/user";
+    fetch(signup_url, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
     })
@@ -36,6 +37,7 @@ const SignUp = () => {
         throw new Error("Network response was not ok.");
       })
       .then((data) => {
+        console.log(data);
         setResponse(data);
         setIsPending(false);
         setError(null);

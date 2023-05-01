@@ -6,7 +6,7 @@ import SignUp from "./components/SignUp";
 import Submittag from "./components/SubmitTag";
 import { BrowserRouter as Router, Route, Routes} from 'react-router-dom';
 import DiscoverFrame from "./components/Discover";
-
+import RecoverAccount from "./components/RecoverAccount";
 
 function App() {
   return (
@@ -21,6 +21,7 @@ function App() {
           <Route exact path="/login" element={<Login />}></Route>
           <Route exact path="/signup" element={<SignUp />}></Route>
           <Route exact path="/discover" element={<DiscoverFrame />}></Route>
+          <Route exact path="/recover-account" element={<RecoverAccount />}></Route>
           </Routes>
         </div>
       </div>

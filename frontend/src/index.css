@@ -99,15 +99,15 @@
 }
 
 /* signup details page */
-.signup-details h2 {
+.account-details h2 {
   font-size: 20px;
   color: #f1356d;
   margin-bottom: 10px;
 }
-.signup-details div {
+.account-details div {
   margin: 20px 0;
 }
-.signup-details button {
+.account-details button {
   background: #f1356d;
   color: #fff;
   border: 0;
@@ -115,7 +115,7 @@
   border-radius: 8px;
   cursor: pointer;
 }
-.signup-details label {
+.account-details label {
   color: #f1356d;
   padding: 8px;
 }

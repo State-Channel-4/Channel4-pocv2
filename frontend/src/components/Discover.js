@@ -12,8 +12,9 @@ const DiscoverFrame = () => {
 
   useEffect(() => {
     const fetchUrls = async () => {
+      const get_tags_url = process.env.REACT_APP_GET_TAGS_URL + "url/tag"
       try {
-        const response = await fetch('https://grove-instinctive-responsibility.glitch.me/api/url/tag', {
+        const response = await fetch(get_tags_url, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
