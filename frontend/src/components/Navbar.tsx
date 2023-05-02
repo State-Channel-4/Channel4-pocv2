@@ -18,7 +18,7 @@ const Navbar = () => {
       <nav className="navbar">
         <h1>Channel4</h1>
         <div className="links">
-        <NavLink to="/" activeClassName="navbar-link-active">Home</NavLink>
+        <NavLink to="/" className="navbar-link-active">Home</NavLink>
         {isLoggedIn && <NavLink to="/submit-url">Submit url</NavLink>}
         {isLoggedIn && <NavLink to="/submit-tag">Submit tag</NavLink>}
         {isLoggedIn &&

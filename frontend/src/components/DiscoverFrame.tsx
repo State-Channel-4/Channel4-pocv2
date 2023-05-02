@@ -1,7 +1,7 @@
 // DiscoverFrame.js
-import { useEffect, useState } from 'react';
-import './Discover.css';
-import { useLocation } from 'react-router-dom';
+import { useEffect, useState } from 'react'
+//import './Discover.css'
+import { useLocation } from 'react-router-dom'
 
 const DiscoverFrame = () => {
   const [currentUrlObj, setCurrentUrlObj] = useState<null | string>(null)
