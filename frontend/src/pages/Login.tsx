@@ -10,7 +10,7 @@ const Login = () => {
   const handleSubmit = (e: React.SyntheticEvent<HTMLFormElement>) => {
     e.preventDefault();
     const address = { walletAddress }
-    const login_url = API_URL + "login"
+    const login_url = API_URL + "/login"
 
     fetch(login_url, {
       method: "POST",
