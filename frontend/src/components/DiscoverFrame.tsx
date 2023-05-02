@@ -1,20 +1,19 @@
-// DiscoverFrame.js
 import { useEffect, useState } from 'react'
-//import './Discover.css'
 import { useLocation } from 'react-router-dom'
+import { API_URL } from '../constants'
+import { UrlType } from '../types'
 
 const DiscoverFrame = () => {
-  const [currentUrlObj, setCurrentUrlObj] = useState<null | string>(null)
-  const [urlList, setUrlList] = useState<string[]>([])
+  const [currentUrlObj, setCurrentUrlObj] = useState<null | UrlType>(null)
+  const [urlList, setUrlList] = useState<UrlType[]>([])
   const location = useLocation()
   const taglist = location.state.taglist
   console.log("taglist : ", taglist)
 
   useEffect(() => {
     const fetchUrls = async () => {
-      const get_tags_url = process.env.REACT_APP_GET_TAGS_URL + "url/tag"
       try {
-        const response = await fetch(get_tags_url, {
+        const response = await fetch(API_URL + "/url/tag", {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -49,7 +48,7 @@ const DiscoverFrame = () => {
   const handleVote = async (voteType: string) => {
     try {
         console.log(voteType)
-        const response = await fetch(``, {
+        const response = await fetch(API_URL + "/vote/" + currentUrlObj?._id, {
             method: 'POST',
             headers: {
             'Content-Type': 'application/json',
@@ -77,7 +76,7 @@ const DiscoverFrame = () => {
 
 
   const handleOpenInNewTab = () => {
-    window.open(currentUrlObj.url, '_blank')
+    window.open(currentUrlObj?.url, '_blank')
   }
 
 
