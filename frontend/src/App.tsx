@@ -2,6 +2,7 @@ import './App.css'
 import Home from './pages/Home'
 import Login from './pages/Login'
 import SignUp from './pages/SignUp'
+import Account from './pages/Account'
 import SubmitUrl from './pages/SubmitUrl'
 
 import Navbar from './components/Navbar'
@@ -23,6 +24,7 @@ function App() {
             <Route path="/submit-tag" element={<SubmitTag />}></Route>
             <Route path="/login" element={<Login />}></Route>
             <Route path="/signup" element={<SignUp />}></Route>
+            <Route path="/account" element={<Account />}></Route>
             <Route path="/discover" element={<DiscoverFrame />}></Route>
             <Route path="/recover-account" element={<RecoverAccount />}></Route>
           </Routes>
