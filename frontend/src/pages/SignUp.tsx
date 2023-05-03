@@ -1,72 +1,43 @@
-import { useEffect, useState } from "react"
-import { useNavigate } from "react-router-dom"
-import SignupInfo from "../components/SignupInfo"
-import { API_URL } from "../constants"
+import { Wallet } from "ethers"
+import { useState } from "react"
+import UserExists from "../components/signUp/UserExists"
 
-const IsLoggedin = () => {
-  const navigate = useNavigate()
-  return (
-    <div className="signup">
-      <h2>You are already logged in!!</h2>
-      <button
-        onClick={() => {
-          navigate("/")
-        }}
-      >
-        Return home
-      </button>
-    </div>
-  );
-};
 
 const SignUp = () => {
-  const user = localStorage.getItem("user")
-  const [response, setResponse] = useState(null)
-  const [error, setError] = useState<null | string>(null)
-  const [isPending, setIsPending] = useState(true)
+  const [password, setPassword] = useState("");
+  const [user, setUser] = useState(localStorage.getItem('user'));
+  const [mnemonic, setMnemonic] = useState("");
 
-  const create_user = () => {
-    const signup_url = API_URL + "/user"
-    fetch(signup_url, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-    })
-      .then((response) => {
-        if (response.ok) {
-          return response.json();
-        }
-        throw new Error("Network response was not ok.")
-      })
-      .then((data) => {
-        console.log(data)
-        setResponse(data)
-        setIsPending(false)
-        setError(null)
-      })
-      .catch((error) => {
-        console.error("There was a problem with the fetch operation:", error)
-        setResponse(null)
-        setError("There was a problem creating the user.")
-      });
+  const handleClick = async () => {
+    const wallet = Wallet.createRandom();
+    const encrypted = await wallet.encrypt(password);
+    localStorage.setItem('user', encrypted);
+    setUser(encrypted);
+    setMnemonic(wallet.mnemonic?.phrase || '');
   }
-
-  useEffect(() => {
-    if (localStorage.getItem("user") === null) {
-      create_user();
-    }
-  }, [user])
 
   return (
     <div className="signup">
-      {user ? (
-        <IsLoggedin />
-      ) : (
+      {user ?
+        <UserExists
+          wallet={user}
+          password={password}
+          mnemonic={mnemonic}
+        />
+        :
         <>
-          {isPending && <p>Loading....</p>}
-          {response && <SignupInfo response={response} />}
-          {error && <pre>{error}</pre>}
+          <h2>Enter a password for your local wallet</h2>
+          <label>Password</label>
+          <input
+            type="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+          />
+          <button onClick={handleClick}>
+            Create Account
+          </button>
         </>
-      )}
+      }
     </div>
   )
 }
