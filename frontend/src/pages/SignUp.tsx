@@ -14,6 +14,8 @@ const SignUp = () => {
     localStorage.setItem('user', encrypted);
     setUser(encrypted);
     setMnemonic(wallet.mnemonic?.phrase || '');
+
+    // TODO: save user in backend and get user id
   }
 
   return (

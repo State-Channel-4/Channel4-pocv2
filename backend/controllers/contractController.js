@@ -50,15 +50,19 @@ const get_all_users = async(req, res) => {
   } catch(error) {
     res.status(400).json({error: error.message})
   }
-  
+
 }
 
 // login
 const login = async(req, res) => {
   try{
-    const {private_key} = req.body
-    const wallet = new ethers.Wallet(private_key);
-    const user = await User.findOne({walletAddress: wallet.address })
+    const {signedMessage} = req.body
+    console.log(signedMessage)
+    console.log(ethers.utils)
+
+    const message = "login to backend";
+    const signer = ethers.utils.verifyMessage(message, signedMessage);
+    const user = await User.findOne({walletAddress: signer })
     if (!user) {
       return res.status(404).json({ message: 'User not found' })
     }
@@ -74,7 +78,7 @@ const login = async(req, res) => {
 
 // get user by id
 /**
- * 
+ *
  * @param {object} req request object
  * @param {object} res response object
  * how to call
@@ -161,9 +165,9 @@ const downvoteUrl = async (req, res) => {
 
 // vote
 /**
- * 
- * @param {object} req 
- * @param {object} res 
+ *
+ * @param {object} req
+ * @param {object} res
  * @returns json
  * how to call
  * PUT localhost:4000/api/vote/id
@@ -189,9 +193,9 @@ const vote = async (req, res) => {
 }
 
 /**
- * 
- * @param {object} req 
- * @param {object} res 
+ *
+ * @param {object} req
+ * @param {object} res
  * @returns json
  * how to call
  * POST localhost:4000/api/url
