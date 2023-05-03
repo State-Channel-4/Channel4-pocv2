@@ -17,24 +17,16 @@ const create_contract = () => {
 // create user
 const create_user = async(req, res) => {
     console.log("creating wallet")
-    // Generate a wallet
-    const wallet = ethers.Wallet.createRandom()
-    console.log('address:', wallet.address)
-    console.log('mnemonic:', wallet.mnemonic.phrase)
-    console.log('privateKey:', wallet.privateKey)
-    console.log("wallet : ", wallet)
-    console.log("object keys", Object.keys(wallet))
-    const walletAddress = wallet.address
+    const {address} = req.body
 
     // add public key to database
     try {
-        const user = await User.create({walletAddress: walletAddress})
+        const user = await User.create({walletAddress: address})
         const token = generateToken(user);
         res.status(200).json({
           user: user,
           token,
-          mnemonic: wallet.mnemonic.phrase,
-          PrivateKey: wallet.privateKey})
+        })
       } catch (error) {
         res.status(400).json({ error: error.message })
       }
