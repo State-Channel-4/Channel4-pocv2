@@ -12,7 +12,6 @@ const Navbar = () => {
       setLogin(false);
     }
   }, [change]);
-  console.log(isLoggedIn);
 
     return (
       <nav className="navbar">
@@ -25,6 +24,7 @@ const Navbar = () => {
           <button
           onClick={() => {
           localStorage.removeItem("user");
+          localStorage.removeItem("user_id");
           setChange((change) => !change);
           navigate('/')
           }}>

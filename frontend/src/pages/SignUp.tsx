@@ -1,10 +1,12 @@
 import { Wallet } from "ethers"
 import { useState } from "react"
 import { API_URL } from "../constants"
+import Notification from "../components/Notification"
 import UserExists from "../components/signUp/UserExists"
 
 
 const SignUp = () => {
+  const [error, setError] = useState<string | null>(null);
   const [password, setPassword] = useState("");
   const [user, setUser] = useState(localStorage.getItem('user'));
   const [mnemonic, setMnemonic] = useState("");
@@ -16,27 +18,24 @@ const SignUp = () => {
     setUser(encrypted);
     setMnemonic(wallet.mnemonic?.phrase || '');
 
-    // save user in backend and get user id
-    const signup_url = API_URL + "/user";
-    fetch(signup_url, {
-      method: "POST",
-      body: JSON.stringify({ address: wallet.address }),
-      headers: { "Content-Type": "application/json" },
-    })
-      .then((response) => {
-        if (response.ok) {
-          return response.json();
-        }
-        throw new Error("Network response was not ok.");
-      })
-      .then((data) => {
-        console.log(data);
-        localStorage.setItem("user_id", data.id)
-      })
-      .catch((error) => {
-        console.error("There was a problem with the fetch operation:", error);
-        // TODO: complete this error handling
-      });
+    try {
+      const result = await fetch(API_URL + "/user", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ address: wallet.address }),
+      }).then((response) => response.json());
+
+      const { user } = result;
+      localStorage.setItem("user_id", user._id);
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (error: any) {
+      if (error.error.includes('E11000 duplicate key error collection: test.users')) {
+        setError('User already exists');
+      } else {
+        setError(JSON.stringify(error));
+      }
+    }
   }
 
   return (
@@ -61,6 +60,7 @@ const SignUp = () => {
           </button>
         </>
       }
+      {error ? <Notification color="red">{error}</Notification> : null}
     </div>
   )
 }

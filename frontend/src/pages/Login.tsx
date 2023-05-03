@@ -2,10 +2,10 @@ import { Wallet } from "ethers"
 import React, { useState } from "react"
 import { useNavigate } from "react-router-dom"
 import { API_URL } from "../constants";
+import Notification from "../components/Notification"
 
 const Login = () => {
-  const [error, setError] = useState(false);
-  const [errorMessage, setErrorMessage] = useState("");
+  const [error, setError] = useState<string | null>(null);
   const [password, setPassword] = useState("");
 
   const navigate = useNavigate();
@@ -15,8 +15,7 @@ const Login = () => {
 
     const user = localStorage.getItem("user");
     if (!user) {
-      setError(true);
-      setErrorMessage('There is no account in local');
+      setError('There is no account in local');
       return;
     }
 
@@ -36,8 +35,8 @@ const Login = () => {
 
     } catch (e) {
       // TODO: handle error when incorrect password and when backend is down
-      setError(true);
-      setErrorMessage('The password is incorrect. Please try again');
+      console.log(e)
+      setError('The password is incorrect. Please try again');
     }
   }
 
@@ -54,7 +53,7 @@ const Login = () => {
         />
         <button>Login</button>
       </form>
-      {error ? <p>{errorMessage}</p> : null}
+      {error ? <Notification color="red">{error}</Notification> : null}
       <button
         onClick={() => {
           navigate("/recover-account")
