@@ -57,11 +57,9 @@ const get_all_users = async(req, res) => {
 const login = async(req, res) => {
   try{
     const {signedMessage} = req.body
-    console.log(signedMessage)
-    console.log(ethers.utils)
 
     const message = "login to backend";
-    const signer = ethers.utils.verifyMessage(message, signedMessage);
+    const signer = ethers.verifyMessage(message, signedMessage);
     const user = await User.findOne({walletAddress: signer })
     if (!user) {
       return res.status(404).json({ message: 'User not found' })
