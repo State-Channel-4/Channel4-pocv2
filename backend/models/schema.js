@@ -9,17 +9,14 @@ const UserSchema = new mongoose.Schema({
   upvotedUrls: [{
     type: mongoose.Schema.Types.ObjectId,
     ref: 'URL',
-    unique: true
   }],
   downvotedUrls: [{
     type: mongoose.Schema.Types.ObjectId,
     ref: 'URL',
-    unique: true
   }],
   submittedUrls: [{
     type: mongoose.Schema.Types.ObjectId,
     ref: 'URL',
-    unique: true
   }],
   createdAt: {
     type: Date,
