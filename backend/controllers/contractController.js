@@ -5,6 +5,9 @@ require('dotenv').config()
 // Models
 const { User, Tag, Url } = require('../models/schema');
 
+const { generateToken } = require('../middleware/auth');
+
+
 const create_contract = () => {
     const provider = new ethers.JsonRpcProvider(process.env.RPC_URL)
     const contract = new ethers.Contract(process.env.CONTRACT_ADDRESS, process.env.ABI, provider)
@@ -14,17 +17,16 @@ const create_contract = () => {
 // create user
 const create_user = async(req, res) => {
     console.log("creating wallet")
-    // Generate a wallet
-    const wallet = ethers.Wallet.createRandom()
-    console.log('address:', wallet.address)
-    console.log('mnemonic:', wallet.mnemonic.phrase)
-    console.log('privateKey:', wallet.privateKey)
-    const walletAddress = wallet.address
+    const {address} = req.body
 
     // add public key to database
     try {
-        const user = await User.create({walletAddress: walletAddress})
-        res.status(200).json({user: user, mnemonic: wallet.mnemonic.phrase, PrivateKey: wallet.privateKey})
+        const user = await User.create({walletAddress: address})
+        const token = generateToken(user);
+        res.status(200).json({
+          user: user,
+          token,
+        })
       } catch (error) {
         res.status(400).json({ error: error.message })
       }
@@ -40,10 +42,41 @@ const get_all_users = async(req, res) => {
   } catch(error) {
     res.status(400).json({error: error.message})
   }
-  
+
+}
+
+// login
+const login = async(req, res) => {
+  try{
+    const {signedMessage} = req.body
+
+    const message = "login to backend";
+    const signer = ethers.verifyMessage(message, signedMessage);
+    const user = await User.findOne({walletAddress: signer })
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' })
+    }
+    console.log("user : ", user)
+    const token = generateToken(user)
+    console.log("token : ", token)
+    return res.status(200).json({user: user, token: token})
+  } catch(error) {
+    return res.status(500).json({error : error.message})
+
+  }
 }
 
 // get user by id
+/**
+ *
+ * @param {object} req request object
+ * @param {object} res response object
+ * how to call
+ * {
+ * localhost:4000/api/user/:id
+ * localhost:4000/api/user:/123
+ * }
+ */
 const get_specific_user = async(req, res) => {
   console.log("get user by id : ", req.params.id)
   try {
@@ -56,13 +89,16 @@ const get_specific_user = async(req, res) => {
 
 
 // recover using mnemonic phrase
-const recover_key = async(req, res) => {
+const recover_account = async(req, res) => {
     const { mnemonic } = req.body
     try {
         console.log("mnemonic : ", mnemonic)
-        const mnemonicWallet = ethers.Wallet.fromMnemonic(mnemonic);
-        console.log(mnemonicWallet.privateKey)
-        res.status(200).json({user: mnemonicWallet})
+        const mnemonicWallet = ethers.Wallet.fromPhrase(mnemonic);
+        console.log("private key : ", mnemonicWallet.privateKey)
+        res.status(200).json({address: mnemonicWallet.address,
+                              public_key: mnemonicWallet.publicKey,
+                              private_key: mnemonicWallet.privateKey},
+                              )
     } catch(error) {
         res.status(400).json({error: error.message})
     }
@@ -118,6 +154,19 @@ const downvoteUrl = async (req, res) => {
   }
 
 // vote
+/**
+ *
+ * @param {object} req
+ * @param {object} res
+ * @returns json
+ * how to call
+ * PUT localhost:4000/api/vote/id
+ * expected json body in request
+ {
+ "address": "0x72....."
+ "vote": "upvote"/"downvote"
+ }
+ */
 const vote = async (req, res) => {
   const {id} = req.params
   console.log("id : ", id)
@@ -133,6 +182,21 @@ const vote = async (req, res) => {
   }
 }
 
+/**
+ *
+ * @param {object} req
+ * @param {object} res
+ * @returns json
+ * how to call
+ * POST localhost:4000/api/url
+ * expected json body in request
+ {
+  "title": "",
+  "url": "",
+  "submittedBy" : "user_id not walletaddress",
+  "tags": []
+ }
+ */
 const submit_url = async(req, res) => {
   try {
     const { title, url, submittedBy, tags } = req.body; // Get the title, URL, and submitter from the request body
@@ -182,15 +246,41 @@ const create_tag = async(req, res) => {
   }
 }
 
+const getUrlsByTags = async(req, res) => {
+  try {
+    const {tags} = req.body
+    // Find URLs that have tags that match the extracted tag IDs
+    const urls = await Url.find({ tags: { $in: tags } }, { _id: 1, url: 1 });
+    return res.status(200).json({urls: urls})
+  } catch(error) {
+    console.log(error)
+    return res.status(500).json({error: error.message})
+  }
+}
+
+
+const test = async(req, res) => {
+  try {
+    const {private_key} = req.body
+    const wallet = new ethers.Wallet(private_key);
+    console.log(wallet)
+    return res.status(200).json({wallet: wallet})
+  } catch(error) {
+    return res.status(500).json({error: error.message})
+  }
+}
 
 
 module.exports = {
     create_user,
-    recover_key,
+    login,
+    recover_account,
     vote,
     submit_url,
     get_all_users,
     get_specific_user,
     create_tag,
-    delete_url
+    delete_url,
+    getUrlsByTags,
+    test
 }

@@ -9,17 +9,14 @@ const UserSchema = new mongoose.Schema({
   upvotedUrls: [{
     type: mongoose.Schema.Types.ObjectId,
     ref: 'URL',
-    unique: true
   }],
   downvotedUrls: [{
     type: mongoose.Schema.Types.ObjectId,
     ref: 'URL',
-    unique: true
   }],
   submittedUrls: [{
     type: mongoose.Schema.Types.ObjectId,
     ref: 'URL',
-    unique: true
   }],
   createdAt: {
     type: Date,
@@ -28,6 +25,10 @@ const UserSchema = new mongoose.Schema({
   updatedAt: {
     type: Date,
     default: Date.now
+  },
+  syncedToBlockchain: {
+    type: Boolean,
+    default: false
   }
 });
 
@@ -67,6 +68,10 @@ const URLSchema = new mongoose.Schema({
   updatedAt: {
     type: Date,
     default: Date.now
+  },
+  syncedToBlockchain: {
+    type: Boolean,
+    default: false
   }
 });
 
@@ -87,6 +92,10 @@ const TagSchema = new mongoose.Schema({
     ref: 'User',
     required: true
   },
+  syncedToBlockchain: {
+    type: Boolean,
+    default: false
+  }
 });
 
 const Tag = mongoose.model('Tag', TagSchema)
