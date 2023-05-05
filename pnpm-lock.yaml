@@ -1,0 +1,6 @@
+lockfileVersion: 5.4
+
+specifiers:
+  backend: ^1.0.0
+  contracts: ^1.0.0
+  vite-fe: ^0.0.0

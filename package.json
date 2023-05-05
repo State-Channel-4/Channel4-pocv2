@@ -4,7 +4,7 @@
     "description": "",
     "engines": {
         "node": ">=16.8",
-        "pnpm": ">=8.2.0",
+        "pnpm": ">=7.28.0",
         "npm": "please-use-pnpm"
     },
     "scripts": {
@@ -12,5 +12,10 @@
     },
     "keywords": [],
     "author": "",
-    "license": "ISC"
+    "license": "ISC",
+    "dependencies": {
+        "backend": "^1.0.0",
+        "contracts": "^1.0.0",
+        "vite-fe": "^0.0.0"
+    }
 }
