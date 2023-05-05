@@ -2,6 +2,11 @@
     "name": "Channel4-pocv2",
     "version": "1.0.0",
     "description": "",
+    "engines": {
+        "node": ">=16.8",
+        "pnpm": ">=8.2.0",
+        "npm": "please-use-pnpm"
+    },
     "scripts": {
         "test": "echo \"Error: no test specified\" && exit 1"
     },
