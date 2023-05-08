@@ -16,7 +16,7 @@
     "dependencies": {
         "backend": "^1.0.0",
         "contracts": "^1.0.0",
-        "poc-next": "^0.1.0",
+        "poc-next": "^0.0.2",
         "vite-fe": "^0.0.0"
     }
 }
