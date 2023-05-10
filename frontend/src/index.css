@@ -5,11 +5,6 @@
 @tailwind utilities;
 
 /* base styles */
-* {
-  margin: 0;
-  font-family: "Quicksand";
-  color: #333;
-}
 .navbar {
   padding: 20px;
   display: flex;
@@ -22,9 +17,6 @@
 .navbar button {
   border-radius: 12px;
 }
-.navbar h1 {
-  color: #f1356d;
-}
 .navbar .links {
   margin-left: auto;
   display: flex;
@@ -35,24 +27,6 @@
   text-decoration: none;
   padding: 6px;
 }
-.navbar a:hover {
-  color: #f1356d;
-}
-.content {
-  max-width: 600px;
-  margin: 40px auto;
-  padding: 20px;
-}
-.navbar-link-active {
-  color: white;
-  background-color: #f1356d;
-  border-radius: 8px;
-}
-.active{
-  color: white;
-  background-color: #f1356d;
-  border-radius: 8px;
- }
 
 /* media queries */
 @media screen and (max-width: 600px) {

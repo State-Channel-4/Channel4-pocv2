@@ -9,27 +9,47 @@ import Navbar from './components/Navbar'
 import SubmitTag from './components/SubmitTag'
 import RecoverAccount from './pages/RecoverAccount'
 import DiscoverFrame from './components/DiscoverFrame'
+import RequireAuth from './components/helper/RequireAuth'
 import { BrowserRouter as Router, Route, Routes} from 'react-router-dom'
 
 
 function App() {
   return (
     <Router>
-      <div className="App">
         <Navbar />
-        <div className="content">
+        <div className="mt-20 w-full h-screen bg-black">
           <Routes>
-            <Route path="/" element={<Home />}></Route>
-            <Route path="/submit-url" element={<SubmitUrl />}></Route>
-            <Route path="/submit-tag" element={<SubmitTag />}></Route>
-            <Route path="/login" element={<Login />}></Route>
-            <Route path="/signup" element={<SignUp />}></Route>
-            <Route path="/account" element={<Account />}></Route>
-            <Route path="/discover" element={<DiscoverFrame />}></Route>
-            <Route path="/recover-account" element={<RecoverAccount />}></Route>
+            <Route path="/" element={<Home />}/>
+            <Route
+              path="/submit-url"
+              element={
+                <RequireAuth>
+                  <SubmitUrl />
+                </RequireAuth>
+              }
+            />
+            <Route
+              path="/submit-tag"
+              element={
+                <RequireAuth>
+                  <SubmitTag />
+                </RequireAuth>
+              }
+            />
+            <Route path="/login" element={<Login />}/>
+            <Route path="/signup" element={<SignUp />}/>
+            <Route
+              path="/account"
+              element={
+                <RequireAuth>
+                  <Account />
+                </RequireAuth>
+              }
+            />
+            <Route path="/discover" element={<DiscoverFrame />}/>
+            <Route path="/recover-account" element={<RecoverAccount />}/>
           </Routes>
         </div>
-      </div>
     </Router>
   )
 }

@@ -11,6 +11,8 @@ const Login = () => {
   const navigate = useNavigate();
 
   const handleSubmit = async (e: React.SyntheticEvent<HTMLFormElement>) => {
+    setError(null);
+
     e.preventDefault();
 
     const user = localStorage.getItem("user");
@@ -33,10 +35,14 @@ const Login = () => {
       console.log("login success");
       navigate("/");
 
-    } catch (e) {
-      // TODO: handle error when incorrect password and when backend is down
-      console.log(e)
-      setError('The password is incorrect. Please try again');
+    } catch (e: any) {
+      // handle error when incorrect password and when backend is down
+      if (e.message.includes('invalid password')) {
+        setError('The password is incorrect. Please try again');
+        return;
+      }
+      // TODO: handle error when user does not exist in backend
+      setError('There has been an error. Please try again later. Error: ' + JSON.stringify(e));
     }
   }
 
@@ -53,7 +59,6 @@ const Login = () => {
         />
         <button>Login</button>
       </form>
-      {error ? <Notification color="red">{error}</Notification> : null}
       <button
         onClick={() => {
           navigate("/recover-account")
@@ -61,6 +66,7 @@ const Login = () => {
       >
         Recover Account
       </button>
+      {error ? <Notification color="red">{error}</Notification> : null}
     </div>
   )
 }
