@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react"
 
-import { Tag } from "./../types"
+import { Tag } from "../types"
 
 const useFetch = (url: string) => {
   const [data, setData] = useState<{ tags: Tag[] }>()
