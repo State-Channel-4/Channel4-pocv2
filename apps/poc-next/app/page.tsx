@@ -1,25 +1,33 @@
-import Link from "next/link"
+import { Tag } from "@/types"
 
-import { siteConfig } from "@/config/site"
-import { buttonVariants } from "@/components/ui/button"
+import TagList from "@/components/ui/tag-list"
 
-export default function IndexPage() {
+const getTags: () => Promise<Tag[]> = async () => {
+  try {
+    const response = await fetch(process.env.API_URL + "/tag")
+    const data = await response.json()
+    return data.tags
+  } catch (error) {
+    console.log(error)
+    return []
+  }
+}
+
+export default async function IndexPage() {
+  const tags = await getTags()
+
   return (
-    <section className="container grid items-center gap-6 pb-8 pt-6 md:py-10">
-      <div className="flex max-w-[980px] flex-col items-start gap-2">
+    <section className="md:py- container grid items-center gap-6 pb-8 pt-6">
+      <div className="flex max-w-[900px] flex-col items-start gap-2">
         <h1 className="text-3xl font-extrabold leading-tight tracking-tighter sm:text-3xl md:text-5xl lg:text-6xl">
-          Traverse random content from all over the internet.
+          Your journey starts here.
         </h1>
-        <p className="max-w-[700px] text-lg text-muted-foreground sm:text-xl">
-          Unlock a world of surprises and laughter with Channel 4! Explore
-          random content, and submit the creative gems with our community. 🎉✨
+        <p className="text-foreground/70 max-w-[700px] text-lg sm:text-xl">
+          Start by selecting tags that interest you. We&apos;ll use these tags
+          to generate a randomized feed of content for you.
         </p>
       </div>
-      <div className="flex gap-4">
-        <Link href={`/discover`} className={buttonVariants({ size: "lg" })}>
-          Start your journey ✨
-        </Link>
-      </div>
+      <TagList tags={tags} />
     </section>
   )
 }
