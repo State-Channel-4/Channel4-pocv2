@@ -1,15 +1,17 @@
 /// <reference types="vite-plugin-svgr/client" />
 
-import { RiArrowRightUpLine, RiHomeSmile2Line } from "react-icons/ri"
-import { NavLink } from "react-router-dom"
+import { RiArrowRightUpLine, RiHomeSmile2Line } from "react-icons/ri";
+import { NavLink } from "react-router-dom";
+
+
 
 import { ReactComponent as Channel4Icon } from "../assets/channel-4-icon-v2.svg"
 
-type Props = {
-  iconColor?: string
-}
+// type Props = {
+//   iconColor?: string
+// }
 
-const Navbar = ({ iconColor = "#E4E4E4" }: Props) => {
+const Navbar = () => {
   // check remix icons names in https://react-icons.github.io/react-icons/icons?name=ri
   return (
     <nav className="fixed top-0 flex w-full justify-between bg-dark px-2 py-5">
@@ -17,7 +19,7 @@ const Navbar = ({ iconColor = "#E4E4E4" }: Props) => {
         to="/"
         className="mx-3 flex cursor-pointer items-center bg-transparent"
       >
-        <RiHomeSmile2Line size="25px" fill={iconColor} />
+        <RiHomeSmile2Line size="25px" fill="currentColor" />
       </NavLink>
 
       <NavLink
@@ -34,7 +36,7 @@ const Navbar = ({ iconColor = "#E4E4E4" }: Props) => {
         to="/"
         className="mx-3 flex cursor-pointer items-center bg-transparent"
       >
-        <RiArrowRightUpLine size="25px" fill={iconColor} />
+        <RiArrowRightUpLine size="25px" fill="currentColor" />
       </NavLink>
     </nav>
   )

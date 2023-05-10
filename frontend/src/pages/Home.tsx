@@ -2,9 +2,9 @@ import TagList from "../components/TagList"
 import { API_URL } from "../constants"
 import useFetch from "../hooks/useFetch"
 
-const Home = () => {
-  const get_tags_url = API_URL + "/tag"
-  const { error, isPending, data } = useFetch(get_tags_url)
+function Home() {
+  const getTagsUrl = API_URL + "/tag"
+  const { error, isPending, data } = useFetch(getTagsUrl)
   const { tags } = data ?? {}
 
   return (
