@@ -4,7 +4,11 @@
 @tailwind components;
 @tailwind utilities;
 
-/* base styles */
+body {
+  @apply bg-slate-950 text-slate-50;
+}
+
+/* base styles 
 .navbar {
   padding: 20px;
   display: flex;
@@ -26,9 +30,9 @@
   margin-left: 16px;
   text-decoration: none;
   padding: 6px;
-}
+} */
 
-/* media queries */
+/* media queries 
 @media screen and (max-width: 600px) {
   .navbar {
     flex-direction: column;
@@ -42,9 +46,9 @@
   .navbar a {
     margin: 10px;
   }
-}
+} */
 
-/* create new url form */
+/* create new url form 
 .create {
   max-width: 400px;
   margin: 0 auto;
@@ -74,9 +78,9 @@
   padding: 8px;
   border-radius: 8px;
   cursor: pointer;
-}
+} */
 
-/* signup details page */
+/* signup details page 
 .account-details h2 {
   font-size: 20px;
   color: #f1356d;
@@ -97,3 +101,4 @@
   color: #f1356d;
   padding: 8px;
 }
+*/
