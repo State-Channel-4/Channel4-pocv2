@@ -1,20 +1,12 @@
-import { Navigate } from 'react-router-dom'
+import { Navigate } from "react-router-dom"
 
 type Props = {
-    children: JSX.Element
+  children: JSX.Element
 }
 
 const RequireAuth = ({ children }: Props) => {
-    const authenticated = !! localStorage.getItem("user_id")
-    return (
-        <>
-        {authenticated ?
-            children
-        :
-            <Navigate to="/" replace />
-        }
-        </>
-    )
+  const authenticated = !!localStorage.getItem("user_id")
+  return <>{authenticated ? children : <Navigate to="/" replace />}</>
 }
 
 export default RequireAuth
