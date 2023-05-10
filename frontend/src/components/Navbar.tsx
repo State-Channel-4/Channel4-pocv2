@@ -1,40 +1,32 @@
-import { useEffect, useState } from "react"
-import { NavLink, useNavigate } from "react-router-dom"
+/// <reference types="vite-plugin-svgr/client" />
 
-const Navbar = () => {
-  const [isLoggedIn, setLogin] = useState(false);
-  const [change, setChange] = useState(false);
-  const navigate = useNavigate()
-  useEffect(() => {
-    if (localStorage.getItem("user") !== null) {
-      setLogin(true);
-    } else {
-      setLogin(false);
-    }
-  }, [change]);
+import { NavLink } from "react-router-dom"
+import { RiHomeSmile2Line, RiArrowRightUpLine } from "react-icons/ri"
+import { ReactComponent as Channel4Icon } from "../assets/channel-4-icon-v2.svg"
 
-    return (
-      <nav className="navbar">
-        <h1>Channel4</h1>
-        <div className="links">
-        <NavLink to="/" className="navbar-link-active">Home</NavLink>
-        {isLoggedIn && <NavLink to="/submit-url">Submit url</NavLink>}
-        {isLoggedIn && <NavLink to="/submit-tag">Submit tag</NavLink>}
-        {isLoggedIn &&
-          <button
-          onClick={() => {
-          localStorage.removeItem("user");
-          localStorage.removeItem("user_id");
-          setChange((change) => !change);
-          navigate('/')
-          }}>
-        Logout</button> }
-        {!isLoggedIn && <NavLink to="/login">Login</NavLink> }
-        {!isLoggedIn && <NavLink to="/signup">SignUp</NavLink> }
+type Props = {
+  iconColor?: string
+}
 
-        </div>
-      </nav>
-    );
-  }
+const Navbar = ({ iconColor = '#E4E4E4'}: Props) => {
 
-  export default Navbar;
+  // check remix icons names in https://react-icons.github.io/react-icons/icons?name=ri
+  return (
+    <nav className="bg-dark fixed top-0 left-0 w-screen flex px-2 py-5 justify-between">
+      <NavLink to="/" className="flex bg-transparent items-center cursor-pointer mx-3">
+        <RiHomeSmile2Line size="25px" fill={iconColor}/>
+      </NavLink>
+
+      <NavLink to="/discover" className="flex items-center bg-gray p-2 mx-3 rounded-lg w-80 justify-center cursor-pointer drop-shadow-md">
+        <Channel4Icon width="25px" height="100%"/>
+        <h1 className="text-white ml-3 font-title font-semibold tracking-wide">Switch</h1>
+      </NavLink>
+
+      <NavLink to="/" className="flex bg-transparent items-center cursor-pointer mx-3">
+        <RiArrowRightUpLine size="25px" fill={iconColor}/>
+      </NavLink>
+    </nav>
+  )
+}
+
+export default Navbar;

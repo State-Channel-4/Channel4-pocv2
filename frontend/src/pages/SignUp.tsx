@@ -12,6 +12,12 @@ const SignUp = () => {
   const [mnemonic, setMnemonic] = useState("");
 
   const handleClick = async () => {
+    setError(null);
+
+    if (password === "") {
+      setError("Password cannot be empty");
+      return;
+    }
     const wallet = Wallet.createRandom();
     const encrypted = await wallet.encrypt(password);
     localStorage.setItem('user', encrypted);
@@ -30,7 +36,7 @@ const SignUp = () => {
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
-      if (error.error.includes('E11000 duplicate key error collection: test.users')) {
+      if (error.error && error.error.includes('E11000 duplicate key error collection: test.users')) {
         setError('User already exists');
       } else {
         setError(JSON.stringify(error));

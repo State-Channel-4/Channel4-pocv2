@@ -3,7 +3,9 @@ import { useNavigate } from 'react-router-dom'
 import { TagType } from '../types'
 
 type TagListProps = {
-    tags: TagType[]
+    tags: {
+      tags: TagType[]
+    }
     title: string
 }
 
@@ -26,7 +28,7 @@ const TagList = ({ tags, title }: TagListProps) => {
   return (
     <div className="tag-list">
       <h2>{title}</h2>
-      {tags.map((tag, index) => (
+      {tags.tags.map((tag, index) => (
         <div className="tag-preview" key={`${tag._id}-${index}`}>
           <input
             type="checkbox"
