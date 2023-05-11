@@ -22,7 +22,7 @@ const Navbar = ({ iconColor = '#D0D1D2'}: Props) => {
     <div className="fixed bottom-0 left-0">
       {
         isMenuOpen ?
-          <nav className="flex flex-col gap-6 bg-c4-gradient-green rounded-t-lg py-8 px-3 font-semibold">
+          <nav className="flex flex-col gap-6 bg-c4-gradient-green rounded-t-3xl py-8 px-3 font-semibold">
             <NavLink to="/account">
               Create account
             </NavLink>
