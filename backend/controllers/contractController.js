@@ -16,21 +16,17 @@ const create_contract = () => {
 
 // create user
 const create_user = async(req, res) => {
-    console.log("creating wallet")
-    const {address} = req.body
-
-    // add public key to database
-    try {
-        const user = await User.create({walletAddress: address})
-        const token = generateToken(user);
-        res.status(200).json({
-          user: user,
-          token,
-        })
-      } catch (error) {
-        res.status(400).json({ error: error.message })
-      }
-
+  const {address} = req.body
+  try {
+    const user = await User.create({walletAddress: address})
+    const token = generateToken(user);
+    res.status(200).json({
+      user: user,
+      token,
+    })
+  } catch (error) {
+    res.status(400).json({ error: error.message })
+  }
 }
 
 // get all users
@@ -105,53 +101,41 @@ const recover_account = async(req, res) => {
 
 }
 
-// PUT upvote
-const upvoteUrl = async (req, res) => {
-    try {
-      const url_id = req.params.id
-      const { address } = req.body
-      const existingUser = await User.findOne({walletAddress: address })
-      if (!existingUser) {
-        return res.status(404).json({ message: 'User not found' })
-      }
-      // Check if the upvote value already exists in the array
-      if (!existingUser.upvotedUrls.includes(url_id)) {
-        // Append to the upvotes array if the value is not already present
-        const url = await Url.findByIdAndUpdate(url_id, {$inc: {upvotes: 1}},  { new: true })
-        console.log(url)
-        existingUser.upvotedUrls.push(url)
-        await existingUser.save()
-      }
-      return res.json(existingUser)
-    } catch (err) {
-      console.error(err)
-      return res.status(500).json({ error: 'Server error' })
-    }
-  }
-
-// PUT downvote
-const downvoteUrl = async (req, res) => {
+// PUT toogle likes like or unlike
+const toggleLike = async (req, res) => {
   try {
     const url_id = req.params.id
     const { address } = req.body
     const existingUser = await User.findOne({walletAddress: address })
     if (!existingUser) {
-      return res.status(404).json({ error: 'User not found' })
+      return res.status(404).json({ message: 'User not found' })
     }
-    // Check if the upvote value already exists in the array
-    if (!existingUser.downvotedUrls.includes(url_id)) {
-      // Append to the upvotes array if the value is not already present
-      const url = await Url.findByIdAndUpdate(url_id, {$inc: {downvotes: 1}},  { new: true })
-      console.log("url : ", url)
-      existingUser.downvotedUrls.push(url)
-      await existingUser.save()
+    // Check if the like value already exists in the array
+    if (!existingUser.likedUrls.includes(url_id)) {
+      // Append to the likes array if the value is not already present
+      const url = await Url.findByIdAndUpdate(url_id, {$inc: {likes: 1}},  { new: true })
+      existingUser.likedUrls.push(url)
+    } else {
+      // Unlike the URL if it was previously liked
+      const index = existingUser.likedUrls.indexOf(url_id)
+      if (index > -1) {
+        // Remove from the likes array
+        existingUser.likedUrls.splice(index, 1)
+        // Decrement like count
+        await Url.findByIdAndUpdate(url_id, {$inc: {likes: -1}},  { new: true })
       }
-      return res.json(existingUser)
-    } catch (err) {
-      console.error(err)
-      return res.status(500).json({ message: 'Server error' })
     }
+    await existingUser.save()
+    return res.json(existingUser)
+  } catch (err) {
+    console.error(err)
+    return res.status(500).json({ error: 'Server error' })
   }
+}
+
+
+
+
 
 // vote
 /**
@@ -164,22 +148,14 @@ const downvoteUrl = async (req, res) => {
  * expected json body in request
  {
  "address": "0x72....."
- "vote": "upvote"/"downvote"
  }
  */
-const vote = async (req, res) => {
+// like or unlike url
+const like = async (req, res) => {
   const {id} = req.params
   console.log("id : ", id)
   console.log("body : ", req.body)
-  if (req.body.vote === "upvote") {
-    return upvoteUrl(req, res)
-  }
-  else if(req.body.vote === "downvote") {
-    return downvoteUrl(req, res)
-  }
-  else {
-    return res.status(403).json({ error: 'Invalid vote input' });
-  }
+  return toggleLike(req, res)
 }
 
 /**
@@ -259,28 +235,15 @@ const getUrlsByTags = async(req, res) => {
 }
 
 
-const test = async(req, res) => {
-  try {
-    const {private_key} = req.body
-    const wallet = new ethers.Wallet(private_key);
-    console.log(wallet)
-    return res.status(200).json({wallet: wallet})
-  } catch(error) {
-    return res.status(500).json({error: error.message})
-  }
-}
-
-
 module.exports = {
-    create_user,
-    login,
-    recover_account,
-    vote,
-    submit_url,
-    get_all_users,
-    get_specific_user,
-    create_tag,
-    delete_url,
-    getUrlsByTags,
-    test
+  create_user,
+  login,
+  recover_account,
+  like,
+  submit_url,
+  get_all_users,
+  get_specific_user,
+  create_tag,
+  delete_url,
+  getUrlsByTags,
 }
