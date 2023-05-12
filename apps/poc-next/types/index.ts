@@ -1,7 +1,9 @@
 export interface Tag {
-  _id: number
+  _id: string
   name: string
 }
+
+export interface TagMap extends Map<string, Tag> {}
 
 export interface Channel4Link {
   _id: number
