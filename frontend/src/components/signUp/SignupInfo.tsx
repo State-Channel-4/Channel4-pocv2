@@ -1,5 +1,5 @@
 import { Wallet } from "ethers"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { useNavigate } from "react-router-dom"
 
 type Props = {
@@ -11,13 +11,26 @@ type Props = {
 const SignupInfo = ({wallet, password, mnemonic}: Props) => {
     const navigate = useNavigate();
     const [error, setError] = useState(false);
-    let address = '', privateKey = '';
-    try {
-        const _wallet = Wallet.fromEncryptedJsonSync(wallet, password);
-        address = _wallet.address;
-        privateKey = _wallet.privateKey;
-    } catch (error) {
-        setError(true);
+    const [address, setAddress] = useState('');
+    const [privateKey, setPrivateKey] = useState('');
+
+    useEffect(() => {
+        try {
+            const _wallet = Wallet.fromEncryptedJsonSync(wallet, password);
+            setAddress(_wallet.address);
+            setPrivateKey(_wallet.privateKey);
+        } catch (error) {
+            setError(true);
+        }
+    }, [wallet, password])
+
+    const onClickDownload = () => {
+        const element = document.createElement("a");
+        const file = new Blob([wallet], {type: 'text/plain'});
+        element.href = URL.createObjectURL(file);
+        element.download = "wallet.json";
+        document.body.appendChild(element);
+        element.click();
     }
 
     return (
@@ -34,6 +47,9 @@ const SignupInfo = ({wallet, password, mnemonic}: Props) => {
                 navigate("/")
 
             }}>I have saved the info.</button>
+            <button onClick={onClickDownload}>
+                Download wallet in JSON
+            </button>
         </div>
     )
 }
