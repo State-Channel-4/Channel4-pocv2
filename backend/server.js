@@ -4,6 +4,11 @@ const express = require('express')
 const mongoose = require('mongoose')
 const contractRoutes = require('./routes/contracts')
 
+// swagger imports
+const swaggerJsdoc = require('swagger-jsdoc');
+const swaggerUi = require('swagger-ui-express');
+const swaggerOptions = require('./swaggerOptions');
+
 // express app
 const app = express()
 
@@ -16,8 +21,12 @@ app.use((req, res, next) => {
   next()
 })
 
+const specs = swaggerJsdoc(swaggerOptions);
+
 // routes
 app.use('/api', contractRoutes)
+app.use('/docs', swaggerUi.serve, swaggerUi.setup(specs, { explorer: true }));
+
 
 // connect to db
 mongoose.connect(process.env.MONGO_URI)
