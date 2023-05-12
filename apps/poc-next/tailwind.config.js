@@ -71,10 +71,19 @@ module.exports = {
         "accordion-up": "accordion-up 0.2s ease-out",
       },
       backgroundImage: {
-        "c4-gradient-main":
+        "c4-gradient":
           "linear-gradient(77.41deg, #FB2BFF -5.41%, #E5F344 21.24%, #37FF4B 47.31%, #4D89FF 74.54%, #8F00FF 105.82%)",
         "c4-gradient-separator":
           "linear-gradient(256.85deg, #FB2BFF 9.09%, #E5F344 38.43%, #37FF4B 67.14%, #4D89FF 97.12%, #8F00FF 131.56%)",
+      },
+      borderColor: {
+        DEFAULT: "hsl(var(--border))",
+        input: "hsl(var(--input))",
+        ring: "hsl(var(--ring))",
+        background: "hsl(var(--background))",
+        foreground: "hsl(var(--foreground))",
+        "c4-gradient":
+          "linear-gradient(77.41deg, #FB2BFF -5.41%, #E5F344 21.24%, #37FF4B 47.31%, #4D89FF 74.54%, #8F00FF 105.82%)",
       },
     },
   },
