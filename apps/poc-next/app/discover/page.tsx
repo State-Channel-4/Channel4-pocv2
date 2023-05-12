@@ -27,7 +27,7 @@ const Discover = () => {
   }, [])
 
   return (
-    <section className="container grid grid-cols-3 gap-6 pb-8 pt-6">
+    <section className="container grid grid-cols-1 gap-6 pb-8 pt-6 xl:grid-cols-3">
       <div className="col-span-1 flex max-w-[900px] flex-col items-start gap-4">
         <h1 className="text-3xl font-extrabold leading-tight tracking-tighter sm:text-3xl md:text-5xl">
           Discover
@@ -49,9 +49,11 @@ const Discover = () => {
             Choose other tags
           </Button>
         </Link>
-        <hr className="bg-c4-gradient h-1 w-3/4 border" />
+        <hr className="bg-c4-gradient h-1 w-full border xl:w-3/4" />
       </div>
+      <div className="col-span-1 xl:col-span-2">
       <SiteFrame />
+      </div>
     </section>
   )
 }
