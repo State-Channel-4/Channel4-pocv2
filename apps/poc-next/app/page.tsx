@@ -1,12 +1,12 @@
-import { Tag } from "@/types"
+import { Tag, TagMap } from "@/types"
 
 import TagList from "@/components/ui/tag-list"
 
-const getTags: () => Promise<Tag[]> = async () => {
+const getTags = async () => {
   try {
     const response = await fetch(process.env.API_URL + "/tag")
-    const data = await response.json()
-    return data.tags
+    const data: { tags: Tag[] } = await response.json()
+    return data
   } catch (error) {
     console.log(error)
     return []
@@ -14,10 +14,18 @@ const getTags: () => Promise<Tag[]> = async () => {
 }
 
 export default async function IndexPage() {
-  const tags = await getTags()
+  const data = await getTags()
+  let tags: TagMap = new Map()
 
+  if ("tags" in data) {
+    data.tags.forEach((tag) => {
+      tags.set(tag._id, tag)
+    })
+  } else {
+    tags = new Map()
+  }
   return (
-    <section className="md:py- container grid items-center gap-6 pb-8 pt-6">
+    <section className="container grid items-center gap-6 pb-8 pt-6">
       <div className="flex max-w-[900px] flex-col items-start gap-2">
         <h1 className="text-3xl font-extrabold leading-tight tracking-tighter sm:text-3xl md:text-5xl lg:text-6xl">
           Your journey starts here.
@@ -27,7 +35,11 @@ export default async function IndexPage() {
           to generate a randomized feed of content for you.
         </p>
       </div>
-      <TagList tags={tags} />
+      <TagList
+        tags={tags}
+        title={"Choose as many tags as you'd like."}
+        selectable
+      />
     </section>
   )
 }

@@ -1,83 +1,101 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useState } from "react"
 import { useRouter } from "next/navigation"
-import { Tag } from "@/types"
+import { Tag, TagMap } from "@/types"
 import { CheckCircle2, PlusCircle } from "lucide-react"
 
 import { cn } from "@/lib/utils"
 
 import { buttonVariants } from "./button"
 
-const TagList = (tags: { tags: Tag[] }) => {
-  const _tags = localStorage.getItem("c4.tags")
-  const { tags: tagList } = tags
+interface TagListProps {
+  tags: TagMap
+  title: string
+  selectable?: boolean
+}
+
+const TagList = ({ tags, title, selectable = false }: TagListProps) => {
   const router = useRouter()
+  const [selectedTags, setSelectedTags] = useState<TagMap>(new Map())
 
-  const [selectedTags, setSelectedTags] = useState<number[]>([])
-
-  useEffect(() => {
-    // If the tags already exist in localStorage, set them as the selected tags
-    if (_tags) setSelectedTags(JSON.parse(_tags))
-  }, [_tags])
-
-  const handleSelectedTags = (tagId: number) => {
-    if (selectedTags.includes(tagId)) {
-      setSelectedTags(selectedTags.filter((id) => id !== tagId))
+  const handleSelectedTags = (selectedTag: Tag) => {
+    if (selectedTags.has(selectedTag._id)) {
+      selectedTags.delete(selectedTag._id)
+      setSelectedTags(new Map(selectedTags))
     } else {
-      setSelectedTags([...selectedTags, tagId])
+      selectedTags.set(selectedTag._id, selectedTag)
+      setSelectedTags(new Map(selectedTags))
     }
   }
 
   const handleDiscover = () => {
-    localStorage.setItem("c4.tags", JSON.stringify(selectedTags))
+    localStorage.setItem(
+      "c4.tags",
+      JSON.stringify(Array.from(selectedTags.entries()))
+    )
     router.push("/discover")
   }
 
   return (
     <section>
-      {tags && (
+      {!tags && (
         <div className="flex flex-col gap-4">
           <h2 className="text-xl font-bold" id="tag-list-label">
-            Choose as many tags as you&apos;d like.
+            We couldn&apos;t find any tags. Please try again later.
           </h2>
+        </div>
+      )}
+      {tags && (
+        <div className="flex flex-col gap-2">
+          <h2 className="text-lg font-semibold">{title}</h2>
           <div className="flex flex-wrap gap-2">
-            {tagList.map((tag) => (
+            {Array.from(tags).map(([key, tag]) => (
               <button
                 className={cn(
-                  "border-primary/ text-primary hover:bg-primary/20 focus:bg-primary/30 focus-visible:ring-offset-muted flex items-center justify-center gap-2 rounded-full border-2 px-3 py-1 text-sm font-medium transition hover:cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-yellow-400 focus-visible:ring-offset-2",
-                  selectedTags.includes(tag._id) ? "border-yellow-400" : ""
+                  "border-primary/20 text-primary flex cursor-default items-center justify-center gap-2 rounded-full border-2 px-3 py-1 text-sm font-medium transition",
+                  selectable &&
+                    "hover:bg-primary/20 focus:bg-primary/30 focus-visible:ring-offset-muted hover:cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-yellow-400 focus-visible:ring-offset-2",
+                  selectable &&
+                    selectedTags.size > 0 &&
+                    selectedTags.has(tag._id)
+                    ? "border-yellow-400"
+                    : ""
                 )}
-                key={tag._id}
-                aria-checked="false"
-                role="checkbox"
+                key={key}
                 tabIndex={0}
-                onClick={() => handleSelectedTags(tag._id)}
+                onClick={() => handleSelectedTags(tag)}
               >
-                <span>
-                  {selectedTags.includes(tag._id) ? (
-                    <CheckCircle2 size={16} className="text-yellow-400" />
-                  ) : (
-                    <PlusCircle size={16} />
-                  )}
-                </span>
+                {selectable && (
+                  <span>
+                    {selectedTags.size > 0 && selectedTags.has(tag._id) ? (
+                      <CheckCircle2 size={16} className="text-yellow-400" />
+                    ) : (
+                      <PlusCircle size={16} />
+                    )}
+                  </span>
+                )}
                 {tag.name}
               </button>
             ))}
           </div>
         </div>
       )}
-      <div className="p-4"></div>
-      <button
-        className={cn(
-          buttonVariants({ size: "lg" }),
-          "bg-c4-gradient-main font-bold transition hover:scale-105"
-        )}
-        disabled={selectedTags.length === 0}
-        onClick={() => handleDiscover()}
-      >
-        Start your journey ✨
-      </button>
+      {selectable && (
+        <>
+          <div className="p-4"></div>
+          <button
+            className={cn(
+              buttonVariants({ size: "lg" }),
+              "bg-c4-gradient-main font-bold transition hover:scale-105"
+            )}
+            disabled={selectedTags.size === 0}
+            onClick={() => handleDiscover()}
+          >
+            Start your journey ✨
+          </button>
+        </>
+      )}
     </section>
   )
 }
