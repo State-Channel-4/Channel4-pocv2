@@ -229,7 +229,34 @@ router.post('/tag', authenticate, cc.create_tag)
 // fetch url by tags
 router.get('/url/tag', cc.getUrlsByTags)
 
+/**
+ * @swagger
+ * /api/tag:
+ *   get:
+ *     summary: Retrieve a list of all tags
+ *     tags: [Tag]
+ *     responses:
+ *       200:
+ *         description: A list of tags.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 tags:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       name:
+ *                         type: string
+ *                       createdBy:
+ *                         type: string
+ *       500:
+ *         description: Server error
+ */
 
-// switch aka get random url from smart contract
+// get all tag
+router.get('/tag', cc.get_all_tags)
 
 module.exports = router

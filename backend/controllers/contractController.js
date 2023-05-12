@@ -222,6 +222,17 @@ const create_tag = async(req, res) => {
   }
 }
 
+// get all tags
+const get_all_tags = async(req, res) => {
+  try {
+    const tags = await Tag.find()
+    res.status(200).json({tags: tags})
+  } catch (error) {
+    console.log(error)
+    return res.status(500).json({error: error.message})
+  }
+}
+
 const getUrlsByTags = async(req, res) => {
   try {
     const {tags} = req.body
@@ -246,4 +257,5 @@ module.exports = {
   create_tag,
   delete_url,
   getUrlsByTags,
+  get_all_tags
 }
