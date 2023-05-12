@@ -12,7 +12,7 @@ const DiscoverFrame = () => {
 
   useEffect(() => {
     const fetchUrls = async () => {
-      const get_tags_url = process.env.REACT_APP_GET_TAGS_URL + "url/tag"
+      const get_tags_url = process.env.REACT_APP_API_URL + "url/tag"
       try {
         const response = await fetch(get_tags_url, {
           method: 'POST',
