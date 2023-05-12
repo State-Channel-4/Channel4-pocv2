@@ -1,5 +1,5 @@
 import { Wallet } from "ethers"
-import { useState } from "react"
+import { useRef, useState } from "react"
 import { API_URL } from "../constants"
 import Notification from "../components/Notification"
 import UserExists from "../components/signUp/UserExists"
@@ -10,8 +10,9 @@ const SignUp = () => {
   const [password, setPassword] = useState("");
   const [user, setUser] = useState(localStorage.getItem('user'));
   const [mnemonic, setMnemonic] = useState("");
+  const fileRef = useRef<HTMLInputElement | null>(null);
 
-  const handleClick = async () => {
+  const handleClickCreate = async () => {
     setError(null);
 
     if (password === "") {
@@ -44,8 +45,31 @@ const SignUp = () => {
     }
   }
 
+  const handleFileChange = async (e: any) => {
+    if (!e.target.files[0]) return;
+
+    const file = e.target.files[0];
+    const reader = new FileReader();
+    reader.onload = async (e) => {
+      const encrypted = e.target?.result;
+      if (typeof encrypted === "string") {
+        localStorage.setItem('user', encrypted);
+        setUser(encrypted);
+      }
+    }
+    reader.readAsText(file);
+    // reset input element
+    e.target.value = "";
+  }
+
+  const handleClickImport = async () => {
+    // import json file from computer
+    if (!fileRef.current) return;
+    fileRef.current.click();
+  }
+
   return (
-    <div className="signup">
+    <div className="signup text-white">
       {user ?
         <UserExists
           wallet={user}
@@ -61,8 +85,18 @@ const SignUp = () => {
             value={password}
             onChange={(e) => setPassword(e.target.value)}
           />
-          <button onClick={handleClick}>
+          <button onClick={handleClickCreate}>
             Create Account
+          </button>
+          <input
+            type="file"
+            ref={fileRef}
+            className="hidden"
+            accept="application/json"
+            onChange={handleFileChange}
+          />
+          <button onClick={handleClickImport}>
+            Import Account
           </button>
         </>
       }
