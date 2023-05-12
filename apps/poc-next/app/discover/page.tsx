@@ -7,7 +7,9 @@ import { TagMap } from "@/types"
 import { Button } from "@/components/ui/button"
 import TagList from "@/components/ui/tag-list"
 
-export default async function Discover() {
+import SiteFrame from "./SiteFrame"
+
+const Discover = () => {
   const [selectedTags, setSelectedTags] = useState<TagMap>(new Map())
 
   useEffect(() => {
@@ -25,9 +27,9 @@ export default async function Discover() {
   }, [])
 
   return (
-    <section className="md:py- container grid items-center gap-6 pb-8 pt-6">
-      <div className="flex max-w-[900px] flex-col items-start gap-4">
-        <h1 className="text-3xl font-extrabold leading-tight tracking-tighter sm:text-3xl md:text-5xl lg:text-6xl">
+    <section className="container grid grid-cols-3 gap-6 pb-8 pt-6">
+      <div className="col-span-1 flex max-w-[900px] flex-col items-start gap-4">
+        <h1 className="text-3xl font-extrabold leading-tight tracking-tighter sm:text-3xl md:text-5xl">
           Discover
         </h1>
         {selectedTags.size === 0 && (
@@ -47,7 +49,11 @@ export default async function Discover() {
             Choose other tags
           </Button>
         </Link>
+        <hr className="bg-c4-gradient h-1 w-3/4 border" />
       </div>
+      <SiteFrame />
     </section>
   )
 }
+
+export default Discover

@@ -87,7 +87,7 @@ const TagList = ({ tags, title, selectable = false }: TagListProps) => {
           <button
             className={cn(
               buttonVariants({ size: "lg" }),
-              "bg-c4-gradient-main font-bold transition hover:scale-105"
+              "bg-c4-gradient font-bold transition hover:scale-105"
             )}
             disabled={selectedTags.size === 0}
             onClick={() => handleDiscover()}
