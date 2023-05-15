@@ -1,9 +1,10 @@
 const express = require('express')
 const cc = require('../controllers/contractController')
-const { authenticate } = require('../middleware/auth');
+const { authenticate, verifySignedMessage } = require('../middleware/auth');
 
 
 const router = express.Router()
+
 
 /**
  * @swagger
@@ -114,7 +115,7 @@ router.post('/recover_account', cc.recover_account)
  *         description: Server error
  */
 // like or unlike a url
-router.put('/like/:id', authenticate, cc.like)
+router.put('/like/:id', authenticate, verifySignedMessage, cc.like)
 
 /**
  * @swagger
@@ -148,7 +149,7 @@ router.put('/like/:id', authenticate, cc.like)
  *         description: Server error
  */
 // submit url
-router.post('/url', authenticate, cc.submit_url)
+router.post('/url', authenticate, verifySignedMessage, cc.submit_url)
 
 
 /**
@@ -200,7 +201,7 @@ router.delete('/url', authenticate, cc.delete_url)
  *         description: Server error
  */
 // creating tags
-router.post('/tag', authenticate, cc.create_tag)
+router.post('/tag', authenticate, verifySignedMessage, cc.create_tag)
 
 
 /**
