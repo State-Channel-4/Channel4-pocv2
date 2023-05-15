@@ -1,7 +1,7 @@
 import { ethers } from "hardhat";
+import { firstTag } from "../constants";
 
 async function main() {
-  const firstTag = "first-tag";
 
   const UrlContract = await ethers.getContractFactory("UrlContract");
   const urlContract = await UrlContract.deploy(firstTag);
