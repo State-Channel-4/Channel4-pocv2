@@ -119,6 +119,11 @@ contract UrlContract {
         return urls;
     }
 
+    /// @notice Retrieve all registered tags
+    function getAllTags() public view returns (Tag[] memory) {
+        return tags.list;
+    }
+
     /// @notice Retrieve all URLs submitted by a specific user
     /// @param userAddress User id
     function getURLsByUser(address userAddress) public view returns (URL[] memory) {
