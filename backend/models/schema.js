@@ -6,11 +6,7 @@ const UserSchema = new mongoose.Schema({
     required: true,
     unique: true
   },
-  upvotedUrls: [{
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'URL',
-  }],
-  downvotedUrls: [{
+  likedUrls: [{
     type: mongoose.Schema.Types.ObjectId,
     ref: 'URL',
   }],
@@ -49,11 +45,7 @@ const URLSchema = new mongoose.Schema({
     ref: 'User',
     required: true
   },
-  upvotes: {
-    type: Number,
-    default: 0
-  },
-  downvotes: {
+  likes: {
     type: Number,
     default: 0
   },
