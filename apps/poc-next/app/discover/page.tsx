@@ -49,10 +49,10 @@ const Discover = () => {
             Choose other tags
           </Button>
         </Link>
-        <hr className="bg-c4-gradient h-1 w-full border xl:w-3/4" />
+        <hr className="bg-c4-gradient-main h-1 w-full border xl:w-3/4" />
       </div>
       <div className="col-span-1 xl:col-span-2">
-      <SiteFrame />
+        <SiteFrame />
       </div>
     </section>
   )
