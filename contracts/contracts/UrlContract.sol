@@ -184,6 +184,7 @@ contract UrlContract {
         address userAddress = msg.sender;
         require(users[userAddress].likedURLs[index] == false, "URL already liked");
         users[userAddress].likedURLs[index] = true;
+        urls[index].likes = urls[index].likes + 1;
     }
 
     /// @notice Unlike a specific URL
@@ -192,5 +193,6 @@ contract UrlContract {
         address userAddress = msg.sender;
         require(users[userAddress].likedURLs[index] == true, "URL already unliked");
         users[userAddress].likedURLs[index] = false;
+        urls[index].likes = urls[index].likes - 1;
     }
 }
