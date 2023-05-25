@@ -1,10 +1,11 @@
-"use client"
+"use client";
 
-import { useEffect, useState } from "react"
-import Link from "next/link"
+import { useEffect, useState } from "react";
+import Link from "next/link";
 import { Channel4Link, TagMap } from "@/types"
 
-import { Button } from "@/components/ui/button"
+import { cn } from "@/lib/utils"
+import { Button, buttonVariants } from "@/components/ui/button"
 import TagList from "@/components/ui/tag-list"
 
 import SiteFrame from "./SiteFrame"
@@ -57,7 +58,7 @@ const __testLink: Channel4Link = {
 
 const Discover = () => {
   const [selectedTags, setSelectedTags] = useState<TagMap>(new Map())
-  const [activeLink, setActiveLink] = useState<Channel4Link | null>(null)
+  const [activeContent, setActiveContent] = useState<Channel4Link | null>(null)
 
   useEffect(() => {
     const tagsFromStore = localStorage.getItem("c4.tags")
@@ -73,36 +74,51 @@ const Discover = () => {
       }
     }
 
-    setActiveLink(__testLink)
+    setActiveContent(__testLink)
   }, [selectedTags])
 
   return (
-    <section className="container grid grid-cols-1 gap-6 pb-8 pt-6 xl:grid-cols-3">
+    <section className="container grid grid-cols-1 gap-10 pb-8 pt-6 xl:grid-cols-3">
       <div className="col-span-1 flex max-w-[900px] flex-col items-start gap-4">
-        <h1 className="text-3xl font-extrabold leading-tight tracking-tighter sm:text-3xl md:text-5xl">
+        {/* <h1 className="text-3xl font-extrabold leading-tight tracking-tighter sm:text-3xl md:text-5xl">
           Discover
-        </h1>
+        </h1> */}
+        {activeContent && (
+          <div className="text-primary flex w-full select-none flex-col gap-1 rounded-lg bg-slate-800/70 p-6 backdrop-blur-sm ">
+            <p className="font-mono text-sm uppercase tracking-widest text-yellow-300">
+              now showing
+            </p>
+            <p className="text-2xl font-semibold">{activeContent.title}</p>
+            <p className="text-primary/70 text-sm">
+              by {activeContent.submittedBy}
+            </p>
+          </div>
+        )}
+        <Button
+          className={cn(
+            buttonVariants({ size: "lg" }),
+            "bg-c4-gradient rounded-full font-bold transition hover:scale-105"
+          )}
+          onClick={() => console.log("clicked")}
+        >
+          next
+        </Button>
+        <hr className="bg-c4-gradient h-1 w-full border xl:w-3/4" />
         {selectedTags.size === 0 && (
           <p>
             You haven&apos;t selected any tags yet. Go to the home page to
             select some tags.
           </p>
         )}
-        {selectedTags.size > 0 && (
-          <TagList
-            tags={selectedTags}
-            title={"Showing random content with these tags:"}
-          />
-        )}
+        {selectedTags.size > 0 && <TagList tags={selectedTags} />}
         <Link href="/" passHref>
           <Button variant={"secondary"} size="sm">
             Choose other tags
           </Button>
         </Link>
-        <hr className="bg-c4-gradient h-1 w-full border xl:w-3/4" />
       </div>
       <div className="col-span-1 xl:col-span-2">
-        {activeLink && <SiteFrame content={activeLink} />}
+        {activeContent && <SiteFrame content={activeContent} />}
       </div>
     </section>
   )

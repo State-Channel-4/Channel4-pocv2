@@ -1,17 +1,22 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { useRouter } from "next/navigation"
-import { Tag, TagMap } from "@/types"
-import { CheckCircle2, PlusCircle } from "lucide-react"
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { Tag, TagMap } from "@/types";
+import { CheckCircle2, PlusCircle } from "lucide-react";
 
-import { cn } from "@/lib/utils"
 
-import { buttonVariants } from "./button"
+
+import { cn } from "@/lib/utils";
+
+
+
+import { buttonVariants } from "./button";
+
 
 interface TagListProps {
   tags: TagMap
-  title: string
+  title?: string
   selectable?: boolean
 }
 
@@ -48,7 +53,7 @@ const TagList = ({ tags, title, selectable = false }: TagListProps) => {
       )}
       {tags && (
         <div className="flex flex-col gap-2">
-          <h2 className="text-lg font-semibold">{title}</h2>
+          {title && <h2 className="text-lg font-semibold">{title}</h2>}
           <div className="flex flex-wrap gap-2">
             {Array.from(tags).map(([key, tag]) => (
               <button
