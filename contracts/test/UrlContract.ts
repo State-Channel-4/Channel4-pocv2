@@ -99,4 +99,13 @@ describe("UrlContract", function () {
     });
 
   });
+
+  describe("Like a URL", async function () {
+    it("Should successfully like a URL", async function () {
+      const { urlContract, otherAccount1 } = await loadFixture(deployUrlContract);
+      // TODO: there is no urls submitted yet but it doesnt fail because likes is a mapping
+      console.log(await urlContract.getAllURLs());
+      await urlContract.connect(otherAccount1).likeURL(0);
+    });
+  });
 });
