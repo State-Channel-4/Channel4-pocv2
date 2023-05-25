@@ -1,7 +1,7 @@
-"use client";
+"use client"
 
-import { useEffect, useState } from "react";
-import Link from "next/link";
+import { useEffect, useState } from "react"
+import Link from "next/link"
 import { Channel4Link, TagMap } from "@/types"
 
 import { cn } from "@/lib/utils"
@@ -116,6 +116,7 @@ const Discover = () => {
             Choose other tags
           </Button>
         </Link>
+        <hr className="bg-c4-gradient-main h-1 w-full border xl:w-3/4" />
       </div>
       <div className="col-span-1 xl:col-span-2">
         {activeContent && <SiteFrame content={activeContent} />}

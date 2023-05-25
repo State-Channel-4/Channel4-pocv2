@@ -32,5 +32,10 @@ export const siteConfig = {
     twitter: "https://twitter.com/PrivacyScaling",
     github: "https://github.com/State-Channel-4/Channel4-pocv2",
     docs: "https://github.com/State-Channel-4/Channel4-pocv2",
+    home: "/",
+    account: "/account",
+    discover: "/discover",
+    submitUrl: "/submit-url",
+    submitTag: "/submit-tag",
   },
 }
