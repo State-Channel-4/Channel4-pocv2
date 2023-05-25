@@ -4,6 +4,7 @@ import TagList from "@/components/ui/tag-list"
 
 const getTags = async () => {
   try {
+    // TODO: Tags should only return tags that have links
     const response = await fetch(process.env.API_URL + "/tag")
     const data: { tags: Tag[] } = await response.json()
     return data
