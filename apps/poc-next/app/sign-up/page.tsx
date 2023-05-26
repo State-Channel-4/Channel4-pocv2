@@ -18,6 +18,8 @@ const SignUp = () => {
   const { updateWallet } = useWalletStore()
   const [password, setPassword] = useState<string | null>(null)
   const [error, setError] = useState<string | null>(null)
+  const [hasAKey, setHasAKey] = useState(false)
+  const [key, setKey] = useState<string | null>(null)
   const [encryptedExists, setEncryptedExists] = useState(false)
 
   const onPasswordChangeHandler = (e: { target: { value: string } }) => {
@@ -40,6 +42,10 @@ const SignUp = () => {
   const clickDeleteHandler = () => {
     updateEncrypted(null)
     updateWallet(null)
+    setPassword(null)
+    setHasAKey(false)
+    setKey(null)
+    setEncryptedExists(false)
   }
 
   const clickStartJourneyHandler = () => {
@@ -48,6 +54,25 @@ const SignUp = () => {
     } else {
       router.push("/create-account")
     }
+  }
+
+  const onLoadKeyChangeHandler = (e: { target: { value: string } }) => {
+    setKey(e.target.value)
+  }
+
+  const clickLoadKeyHandler = () => {
+    updateEncrypted(key)
+    setPassword(null)
+    setEncryptedExists(true)
+  }
+
+  const clickCancelKeyHandler = () => {
+    setHasAKey(false)
+    setKey(null)
+  }
+
+  const clickAlreadyHaveKeyHandler = () => {
+    setHasAKey(true)
   }
 
   return (
@@ -76,6 +101,7 @@ const SignUp = () => {
             <p>Password:</p>
             <input
               type={"password"}
+              value={password || ""}
               onChange={onPasswordChangeHandler}
               className="bg-gray w-full rounded-sm px-2 py-1"
             />
@@ -104,12 +130,41 @@ const SignUp = () => {
           >
             Start your journey
           </Button>
-          <Button
-            variant="outline"
-            className="mt-4 rounded-full border-transparent py-6 text-green-500 hover:border-green-500"
-          >
-            Already have the key?
-          </Button>
+          {hasAKey ? (
+            <div className="my-5 mb-24 flex flex-col items-center space-y-5">
+              <p>Your key:</p>
+              <input
+                type={"text"}
+                value={key || ""}
+                onChange={onLoadKeyChangeHandler}
+                className="bg-gray h-40 w-full rounded-sm px-2"
+              />
+              <Button
+                variant="outline"
+                onClick={clickLoadKeyHandler}
+                className="rounded-full border-green-500 py-6 text-green-500"
+              >
+                Load key
+              </Button>
+              <Button
+                variant="outline"
+                onClick={clickCancelKeyHandler}
+                className="mt-4 rounded-full border-transparent py-6 text-green-500 hover:border-green-500"
+              >
+                Cancel
+              </Button>
+            </div>
+          ) : (
+            <>
+              <Button
+                variant="outline"
+                onClick={clickAlreadyHaveKeyHandler}
+                className="mt-4 rounded-full border-transparent py-6 text-green-500 hover:border-green-500"
+              >
+                Already have the key?
+              </Button>
+            </>
+          )}
         </div>
       )}
     </div>
