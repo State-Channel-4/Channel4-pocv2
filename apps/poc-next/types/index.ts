@@ -5,8 +5,8 @@ export interface Tag {
 
 export interface TagMap extends Map<string, Tag> {}
 
-export interface Channel4Link {
-  _id: number
+export interface C4Content {
+  _id: string
   title: string
   url: string
   submittedBy: string
