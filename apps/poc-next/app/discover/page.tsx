@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from "react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { C4Content, TagMap } from "@/types"
-import { ThumbsUp } from "lucide-react"
+import { ExternalLink, Link2Icon, LinkIcon, ThumbsUp } from "lucide-react"
 
 import { cn } from "@/lib/utils"
 import { Button, buttonVariants } from "@/components/ui/button"
@@ -14,17 +14,17 @@ import SiteFrame from "./SiteFrame"
 
 // TODO:
 // - [ ] Get links based on tags from API
-// - [ ] Display links in iframe
-// - [ ] Add like button
-// - [ ] Add open in new tab button
-// - [ ] Add submitted by (?)
+// - [x] Display link in iframe
+// - [x] Add like button
+// - [x] Add open in new tab button
+// - [x] Add submitted by (?)
 // - [ ] Add micro-interactions
 // - [ ] Add loading animations
 // - [ ] Add error handling
 
 // const getLinksForSelectedTags = async (tags: TagMap) => {
 //   try {
-//     const response = await fetch("/links", {
+//     const response = await fetch("/mix", {
 //       method: "POST",
 //       headers: {
 //         "Content-Type": "application/json",
@@ -124,7 +124,12 @@ const Discover = () => {
                 <p>3</p>
               </button>
               <Link href={activeContent.url} passHref target="__blank">
-                <Button variant={"link"}>Open in new tab</Button>
+                <Button
+                  variant={"link"}
+                  className="text-primary/70 hover:text-primary flex gap-1"
+                >
+                  Go to site <LinkIcon size={14} />
+                </Button>
               </Link>
             </div>
 
