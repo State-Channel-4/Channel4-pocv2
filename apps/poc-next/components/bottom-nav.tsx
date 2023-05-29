@@ -52,8 +52,7 @@ export function BottomNavigation({ iconColor = "#D0D1D2" }: Props) {
             <RiHeartFill size="25px" fill={iconColor} />
           </Link>
 
-          <Link
-            href="#"
+          <button
             onClick={handleMenuClick}
             className="flex cursor-pointer items-center bg-transparent"
           >
@@ -62,7 +61,7 @@ export function BottomNavigation({ iconColor = "#D0D1D2" }: Props) {
             ) : (
               <RiMenu2Line size="25px" fill={iconColor} />
             )}
-          </Link>
+          </button>
         </div>
       </nav>
     </div>

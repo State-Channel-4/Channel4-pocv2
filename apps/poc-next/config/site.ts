@@ -11,7 +11,7 @@ export const siteConfig = {
     },
     {
       title: "Add site",
-      href: "/sites/new",
+      href: "/submit-url",
     },
     {
       title: "Add tag",
