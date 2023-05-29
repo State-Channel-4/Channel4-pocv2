@@ -19,7 +19,7 @@ const SubmitUrl = () => {
   }
 
   return (
-    <div className="mx-7 flex flex-col justify-center">
+    <div className="mx-7 flex flex-col justify-center lg:container">
       <div className="bg-c4-gradient-main my-5 flex h-40 justify-center rounded-br-3xl rounded-tl-3xl">
         <Image priority src={Channel4IconBlack} alt="Channel 4 icon black" />
       </div>

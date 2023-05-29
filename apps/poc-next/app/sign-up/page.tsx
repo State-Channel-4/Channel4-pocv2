@@ -76,8 +76,8 @@ const SignUp = () => {
   }
 
   return (
-    <div className="mx-7 flex flex-col justify-center">
-      <div className="bg-c4-gradient-main my-5 flex h-40 rounded-br-3xl rounded-tl-3xl">
+    <div className="mx-7 flex flex-col justify-center lg:container">
+      <div className="bg-c4-gradient-main my-5 flex h-40 justify-evenly rounded-br-3xl rounded-tl-3xl">
         <Image
           priority
           className="relative top-12 z-10"
