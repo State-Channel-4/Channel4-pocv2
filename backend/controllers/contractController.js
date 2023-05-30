@@ -233,11 +233,20 @@ const get_all_tags = async(req, res) => {
   }
 }
 
+// Helper function to fetch URLs based on tags
+const fetchUrlsByTags  = async (tags) => {
+  // Find URLs that have tags that match the extracted tag IDs
+  // Populate the 'tags' field of the URLs with the tag names
+  return await Url.find({ tags: { $in: tags } }, { _id: 1, url: 1, tags: 1 }).populate('tags', 'name');
+}
+
+// return urls by tags. No shuffling
 const getUrlsByTags = async(req, res) => {
   try {
-    const {tags} = req.body
+    const { tags } = req.query;
+    console.log("tags : ", tags)
     // Find URLs that have tags that match the extracted tag IDs
-    const urls = await Url.find({ tags: { $in: tags } }, { _id: 1, url: 1 });
+    const urls = await fetchUrlsByTags(tags)
     return res.status(200).json({urls: urls})
   } catch(error) {
     console.log(error)
@@ -245,6 +254,57 @@ const getUrlsByTags = async(req, res) => {
   }
 }
 
+// Helper function to shuffle an array
+// Fisher-Yates algorithm O(n)
+const shuffleArray = (array) => {
+  const shuffledArray = [...array];
+  for (let i = shuffledArray.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [shuffledArray[i], shuffledArray[j]] = [shuffledArray[j], shuffledArray[i]];
+  }
+  return shuffledArray;
+};
+
+// mix feed
+const mix = async (req, res) => {
+  try {
+    const { tags } = req.query;
+    console.log("tags : ", tags)
+    // Fetch the URLs based on the provided tags
+    const urls = await fetchUrlsByTags(tags);
+
+    // Randomize the order of the URLs
+    const randomizedUrls = shuffleArray(urls);
+    return res.status(200).json({ urls: randomizedUrls });
+  } catch (error) {
+    return res.status(500).json({ error: error.message });
+  }
+};
+
+
+const syncDataToSmartContract = async () => {
+  const contract = create_contract();
+  const wallet = new ethers.Wallet(process.env.PRIVATE_KEY, contract.provider);
+  const contractWithSigner = contract.connect(wallet);
+
+  // Sync users
+  const users = await User.find();
+  for (const user of users) {
+      await contractWithSigner.addUser(user.walletAddress);
+  }
+
+  // Sync URLs
+  const urls = await Url.find().populate('submittedBy');
+  for (const url of urls) {
+      await contractWithSigner.addUrl(url.title, url.url, url.submittedBy.walletAddress, url.id);
+  }
+
+  // Sync tags
+  const allTags = await Tag.find().populate('createdBy');
+  for (const tag of allTags) {
+      await contractWithSigner.addTag(tag.name, tag.createdBy.walletAddress);
+  }
+}
 
 module.exports = {
   create_user,
@@ -257,5 +317,7 @@ module.exports = {
   create_tag,
   delete_url,
   getUrlsByTags,
-  get_all_tags
+  get_all_tags,
+  mix,
+  syncDataToSmartContract
 }
