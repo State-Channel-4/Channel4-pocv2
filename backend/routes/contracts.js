@@ -232,6 +232,57 @@ router.get('/url/tag', cc.getUrlsByTags)
 
 /**
  * @swagger
+ * /api/mix:
+ *   get:
+ *     summary: Fetch mixed URLs from tags
+ *     tags: [URL]
+ *     parameters:
+ *       - in: query
+ *         name: tags
+ *         required: true
+ *         schema:
+ *           type: array
+ *           items:
+ *             type: string
+ *         style: form
+ *         explode: true
+ *         description: An array of tags to filter the URLs
+ *     responses:
+ *       200:
+ *         description: The mixed URLs were fetched successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 urls:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       _id:
+ *                         type: string
+ *                       url:
+ *                         type: string
+ *                       tags:
+ *                         type: array
+ *                         items:
+ *                           type: object
+ *                           properties:
+ *                             _id:
+ *                               type: string
+ *                             name:
+ *                               type: string
+ *       400:
+ *         description: Bad request. Missing or invalid parameters.
+ *       500:
+ *         description: Server error
+ */
+// fetch mixed urls from tags. take tags as query param
+router.get('/mix', cc.mix)
+
+/**
+ * @swagger
  * /api/tag:
  *   get:
  *     summary: Retrieve a list of all tags
