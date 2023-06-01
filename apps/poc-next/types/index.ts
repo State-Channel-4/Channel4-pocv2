@@ -10,8 +10,7 @@ export interface C4Content {
   title: string
   url: string
   submittedBy: string
-  upvotes: number
-  downvotes: number
+  likes: string[]
   tags: Tag[]
   createdAt: Date
   updatedAt: Date
