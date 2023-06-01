@@ -4,7 +4,8 @@ import { useEffect, useRef, useState } from "react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { C4Content, TagMap } from "@/types"
-import { ExternalLink, Link2Icon, LinkIcon, ThumbsUp } from "lucide-react"
+import { LinkIcon, ThumbsUpIcon } from "lucide-react"
+import useSWR, { Fetcher } from "swr"
 
 import { cn } from "@/lib/utils"
 import { Button, buttonVariants } from "@/components/ui/button"
@@ -18,51 +19,59 @@ import SiteFrame from "./SiteFrame"
 // - [x] Add like button
 // - [x] Add open in new tab button
 // - [x] Add submitted by (?)
-// - [ ] Add micro-interactions
+// - [x] Add micro-interactions
 // - [ ] Add loading animations
 // - [ ] Add error handling
 
-// const getLinksForSelectedTags = async (tags: TagMap) => {
-//   try {
-//     const response = await fetch("/mix", {
-//       method: "POST",
-//       headers: {
-//         "Content-Type": "application/json",
-//       },
-//       body: JSON.stringify({
-//         tags,
-//       }),
-//     })
-
-//     if (!response.ok) {
-//       throw new Error("Error fetching URLs")
-//     }
-
-//     const data = await response.json()
-//     return data
-//   } catch (error) {
-//     console.error("Error:", error)
-//   }
-// }
+const getMix: Fetcher<{ urls: C4Content[] }, TagMap> = (tags) => {
+  const tagQueries = new URLSearchParams()
+  tags.forEach((tag) => tagQueries.append("tags", tag._id))
+  return fetch(
+    `${process.env.NEXT_PUBLIC_API_URL}/mix?${tagQueries.toString()}`
+  ).then((response) => response.json())
+}
 
 const __testLink: C4Content = {
   _id: "123",
   url: "https://www.openstreetmap.org/export/embed.html?bbox=-0.004017949104309083%2C51.47612752641776%2C0.00030577182769775396%2C51.478569861898606&layer=mapnik",
   tags: [{ _id: "1", name: "test" }],
-  upvotes: 0,
-  downvotes: 0,
   submittedBy: "--nightc0re--",
   createdAt: new Date("2021-10-10T12:00:00.000Z"),
   updatedAt: new Date("2021-10-10T12:00:00.000Z"),
   title: "OpenStreetMap",
   syncedToBlockchain: false,
+  likes: ["abc", "def"],
 }
 
 const Discover = () => {
   const selectedTags = useRef<TagMap>(new Map())
   const [activeContent, setActiveContent] = useState<C4Content | null>(null)
+  const [mixIndex, setMixIndex] = useState<number>(0)
+  const [mixCompleted, setMixCompleted] = useState<boolean>(false)
   const [userLiked, setUserLiked] = useState<boolean>(false)
   const router = useRouter()
+
+  const { data, error, isLoading } = useSWR(selectedTags.current, getMix, {
+    revalidateOnFocus: false,
+    revalidateOnReconnect: false,
+    onSuccess: (data) => {
+      const content = data.urls
+      console.log("data", data)
+      if (!content || content.length === 0) {
+        // router.push("/")
+        setActiveContent(null)
+        return
+      }
+      // TODO: Remove test link
+      data.urls.push(__testLink)
+      setActiveContent(content[mixIndex])
+    },
+  })
+  const feedbackMessages = {
+    "not-found": "No content found for the selected tags. Please try again.",
+    "no-tags": "No tags selected. Please select at least one tag.",
+    loading: "Loading content...",
+  }
 
   const handleLike = (id: string) => {
     // TODO: Update likes
@@ -83,12 +92,27 @@ const Discover = () => {
     }
   }
 
+  const changeActiveContent = () => {
+    if (!data) return
+    setActiveContent(data.urls[mixIndex + 1])
+    if (mixIndex + 1 === data.urls.length - 1) {
+      setMixCompleted(true)
+      setMixIndex(0)
+      return
+    }
+    setMixIndex((prev) => prev + 1)
+  }
+
   useEffect(() => {
     getTagsFromStore()
-    if (selectedTags.current.size === 0) router.push("/")
-    setActiveContent(__testLink)
-  }, [activeContent, selectedTags, router])
+  }, [])
 
+  if (error) {
+    return <p className="text-red-500">{feedbackMessages["not-found"]}</p>
+  }
+  if (isLoading) {
+    return <p className="text-red-500">{feedbackMessages.loading}</p>
+  }
   return (
     <section className="container grid grid-cols-1 gap-10 pb-8 pt-6 xl:grid-cols-3">
       <div className="col-span-1 xl:col-span-2">
@@ -111,7 +135,7 @@ const Discover = () => {
                 className="bg-primary/20 hover:bg-primary/10 text-primary/70 group inline-flex items-center gap-2 self-start rounded-full px-4 py-2 text-sm transition-all duration-300"
                 onClick={(e) => handleLike(activeContent._id)}
               >
-                <ThumbsUp
+                <ThumbsUpIcon
                   size={16}
                   className={cn(
                     "transition-all duration-300 group-hover:-rotate-12 group-hover:scale-110 group-hover:text-yellow-300",
@@ -139,9 +163,10 @@ const Discover = () => {
                 buttonVariants({ size: "lg" }),
                 "bg-c4-gradient-main w-3/4 rounded-l-none rounded-r-full font-bold uppercase transition-all duration-500 hover:w-full"
               )}
-              onClick={() => console.log("clicked")}
+              disabled={mixCompleted}
+              onClick={changeActiveContent}
             >
-              change channel
+              {!mixCompleted ? "watch something else" : "ended mix"}
             </Button>
             <p className="p-1"></p>
             <hr className="bg-c4-gradient-main h-1 w-full border" />
