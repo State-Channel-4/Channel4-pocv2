@@ -233,11 +233,11 @@ const get_all_tags = async(req, res) => {
   }
 }
 
-// Helper function to fetch URLs based on tags
+// Helper function to url URLs based on tags
 const fetchUrlsByTags  = async (tags) => {
   // Find URLs that have tags that match the extracted tag IDs
   // Populate the 'tags' field of the URLs with the tag names
-  return await Url.find({ tags: { $in: tags } }, { _id: 1, url: 1, tags: 1 }).populate('tags', 'name');
+  return await Url.find({ tags: { $in: tags } }, {}).populate('tags', 'name');
 }
 
 // return urls by tags. No shuffling
