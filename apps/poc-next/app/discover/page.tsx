@@ -67,6 +67,7 @@ const Discover = () => {
       setActiveContent(content[mixIndex])
     },
   })
+
   const feedbackMessages = {
     "not-found": "No content found for the selected tags. Please try again.",
     "no-tags": "No tags selected. Please select at least one tag.",
@@ -108,11 +109,15 @@ const Discover = () => {
   }, [])
 
   if (error) {
-    return <p className="text-red-500">{feedbackMessages["not-found"]}</p>
+    return <p className="mx-auto flex w-full items-center justify-center p-6">{feedbackMessages["not-found"]}</p>
   }
   if (isLoading) {
-    return <p className="text-red-500">{feedbackMessages.loading}</p>
+    return <p className="mx-auto flex w-full items-center justify-center p-6">{feedbackMessages.loading}</p>
   }
+  if (!selectedTags.current || selectedTags.current.size === 0) {
+    return <p className="mx-auto flex w-full items-center justify-center p-6">{feedbackMessages["no-tags"]}</p>
+  }
+
   return (
     <section className="container grid grid-cols-1 gap-10 pb-8 pt-6 xl:grid-cols-3">
       <div className="col-span-1 xl:col-span-2">
@@ -160,13 +165,15 @@ const Discover = () => {
             <p className="p-1"></p>
             <Button
               className={cn(
-                buttonVariants({ size: "lg" }),
-                "bg-c4-gradient-main w-3/4 rounded-l-none rounded-r-full font-bold uppercase transition-all duration-500 hover:w-full"
+                buttonVariants({ size: "lg" , variant: 'default'}),
+                "rounded-full font-bold uppercase transition-all duration-500 active:scale-75"
               )}
               disabled={mixCompleted}
+              role="button"
+              aria-label="Next"
               onClick={changeActiveContent}
             >
-              {!mixCompleted ? "watch something else" : "ended mix"}
+              {!mixCompleted ? "watch something else" : "mix ended"}
             </Button>
             <p className="p-1"></p>
             <hr className="bg-c4-gradient-main h-1 w-full border" />
