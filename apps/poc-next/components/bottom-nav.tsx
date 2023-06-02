@@ -25,7 +25,7 @@ export function BottomNavigation({ iconColor = "#D0D1D2" }: Props) {
     <div className="bg-dark fixed bottom-0 left-0 w-screen">
       {isMenuOpen ? (
         <nav className="bg-c4-gradient-green flex flex-col gap-6 rounded-t-3xl px-3 py-8 font-semibold text-black">
-          <Link href={siteConfig.links.account}>Create account</Link>
+          <Link href={siteConfig.links.signUp}>Sign Up</Link>
           <Link href={siteConfig.links.submitUrl}>Submit URL</Link>
           <Link href={siteConfig.links.submitTag}>Add tags to this site</Link>
           <Link href={window.location.href} target="_blank">

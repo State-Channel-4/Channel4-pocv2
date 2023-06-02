@@ -4,7 +4,6 @@ import { useState } from "react"
 import { useRouter } from "next/navigation"
 import { useEncryptedStore } from "@/store/encrypted"
 import { useWalletStore } from "@/store/wallet"
-import { Wallet } from "ethers"
 
 import { Button } from "@/components/ui/button"
 
@@ -14,7 +13,7 @@ const CreateAccount = () => {
   const [isWalletCreated, setIsWalletCreated] = useState(false)
   const [password, setPassword] = useState<string | null>(null)
   const [error, setError] = useState<string | null>(null)
-  const { updateWallet } = useWalletStore()
+  const { createWallet } = useWalletStore()
   const { encrypted, updateEncrypted } = useEncryptedStore()
 
   const clickDownloadKeyHandler = async () => {
@@ -40,11 +39,15 @@ const CreateAccount = () => {
   }
 
   const clickCreateAccountHandler = async () => {
-    const wallet = Wallet.createRandom()
-    const encryptedWallet = await wallet.encrypt(password!)
-    updateWallet(wallet)
-    updateEncrypted(encryptedWallet)
-    setIsWalletCreated(true)
+    const encryptedWallet = await createWallet(password!)
+    if (encryptedWallet) {
+      updateEncrypted(encryptedWallet)
+      setIsWalletCreated(true)
+    } else {
+      setError(
+        "There is already a wallet created internally. Please delete local storage and try again."
+      )
+    }
   }
 
   return (
