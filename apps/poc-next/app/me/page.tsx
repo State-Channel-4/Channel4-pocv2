@@ -1,6 +1,6 @@
 "use client"
 
-import { ReactNode, useState } from "react"
+import { ReactNode, useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
 import { useEncryptedStore } from "@/store/encrypted"
 import { useWalletStore } from "@/store/wallet"
@@ -15,9 +15,22 @@ const Account = () => {
   const [copied, setCopied] = useState(false)
   const { updateEncrypted } = useEncryptedStore()
   const { wallet, updateWallet } = useWalletStore()
+  const [address, setAddress] = useState(wallet?.address || "No address found")
+  const [shownAddress, setShownAddress] = useState("No address found")
+
+  useEffect(() => {
+    if (wallet?.address) {
+      const prefix = wallet.address.replace(/(.{5})..+/, "$1…")
+      const postfix = wallet.address.substring(
+        wallet.address.length - 4,
+        wallet.address.length
+      )
+      setShownAddress(prefix + postfix)
+    }
+  }, [wallet?.address])
 
   const copyAddress = () => {
-    navigator.clipboard.writeText(wallet?.address || "No address found")
+    navigator.clipboard.writeText(address)
     setCopied(true)
     setTimeout(() => {
       setCopied(false)
@@ -52,15 +65,13 @@ const Account = () => {
         </Row>
         <div className="mx-auto flex flex-col items-center">
           <QRCodeSVG
-            value={wallet?.address || "No address found"}
+            value={address}
             size={180}
             level="H"
             className="w-fit rounded-lg bg-white p-2"
           />
           <p className="p-2"></p>
-          <p className="text-slate-400">
-            {wallet?.address || "No address found"}
-          </p>
+          <p className="text-slate-400">{shownAddress}</p>
           <button
             onClick={copyAddress}
             className={cn(
