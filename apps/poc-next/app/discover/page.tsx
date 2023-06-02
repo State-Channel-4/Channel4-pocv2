@@ -75,8 +75,12 @@ const Discover = () => {
   }
 
   const handleLike = (id: string) => {
-    // TODO: Update likes
+    if(!activeContent) return;
     setUserLiked(!userLiked)
+    // this updates the UI optimistically
+    activeContent.likes = userLiked ? activeContent.likes - 1 : activeContent.likes + 1
+
+    // TODO: Update likes in API
   }
 
   const getTagsFromStore = () => {
@@ -150,7 +154,7 @@ const Discover = () => {
                 />
                 <p className="text-primary">{userLiked ? "Liked" : "Like"}</p>
                 <p>•</p>
-                <p>3</p>
+                <p>{activeContent.likes}</p>
               </button>
               <Link href={activeContent.url} passHref target="__blank">
                 <Button
