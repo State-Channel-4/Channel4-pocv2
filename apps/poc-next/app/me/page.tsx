@@ -1,22 +1,35 @@
 "use client"
 
 import { ReactNode, useState } from "react"
+import { useRouter } from "next/navigation"
+import { useEncryptedStore } from "@/store/encrypted"
+import { useWalletStore } from "@/store/wallet"
 import { Copy } from "lucide-react"
 import { QRCodeSVG } from "qrcode.react"
 
 import { cn } from "@/lib/utils"
+import { Button } from "@/components/ui/button"
 
 const Account = () => {
-  const [address, setAddress] = useState("qZw89134ads123aaodaBx") // localStorage.getItem('address')
+  const router = useRouter()
   const [copied, setCopied] = useState(false)
+  const { updateEncrypted } = useEncryptedStore()
+  const { wallet, updateWallet } = useWalletStore()
 
   const copyAddress = () => {
-    navigator.clipboard.writeText(address)
+    navigator.clipboard.writeText(wallet?.address || "No address found")
     setCopied(true)
     setTimeout(() => {
       setCopied(false)
     }, 2000)
   }
+
+  const clickDeleteHandler = () => {
+    updateEncrypted(null)
+    updateWallet(null)
+    router.push("/")
+  }
+
   return (
     <section className="mx-auto flex max-w-xl flex-col gap-6 p-6">
       <h2 className="text-left font-semibold">My account</h2>
@@ -39,13 +52,15 @@ const Account = () => {
         </Row>
         <div className="mx-auto flex flex-col items-center">
           <QRCodeSVG
-            value={address}
+            value={wallet?.address || "No address found"}
             size={180}
             level="H"
             className="w-fit rounded-lg bg-white p-2"
           />
           <p className="p-2"></p>
-          <p className="text-slate-400">{address}</p>
+          <p className="text-slate-400">
+            {wallet?.address || "No address found"}
+          </p>
           <button
             onClick={copyAddress}
             className={cn(
@@ -56,6 +71,15 @@ const Account = () => {
             <span>{copied ? "Copied!" : "Copy to clipboard"}</span>
             <Copy size={12} />
           </button>
+          {wallet?.address && (
+            <Button
+              variant="outline"
+              onClick={clickDeleteHandler}
+              className="mt-10 w-full rounded-full border-transparent py-6 text-green-500"
+            >
+              Delete local key
+            </Button>
+          )}
         </div>
       </div>
     </section>

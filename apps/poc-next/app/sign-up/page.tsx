@@ -30,7 +30,7 @@ const SignUp = () => {
     try {
       const wallet = Wallet.fromEncryptedJsonSync(encrypted!, password!)
       updateWallet(wallet)
-      router.push("/discover")
+      router.push("/me")
     } catch (error: any) {
       setError(error.message)
       setTimeout(() => {
