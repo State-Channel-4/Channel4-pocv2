@@ -1,20 +1,15 @@
 "use client"
 
 import { ReactNode, useEffect, useState } from "react"
-import { useRouter } from "next/navigation"
-import { useEncryptedStore } from "@/store/encrypted"
 import { useWalletStore } from "@/store/wallet"
 import { Copy } from "lucide-react"
 import { QRCodeSVG } from "qrcode.react"
 
 import { cn } from "@/lib/utils"
-import { Button } from "@/components/ui/button"
 
 const Account = () => {
-  const router = useRouter()
   const [copied, setCopied] = useState(false)
-  const { updateEncrypted } = useEncryptedStore()
-  const { wallet, updateWallet } = useWalletStore()
+  const { wallet } = useWalletStore()
   const [address, setAddress] = useState(wallet?.address || "No address found")
   const [shownAddress, setShownAddress] = useState("No address found")
 
@@ -35,12 +30,6 @@ const Account = () => {
     setTimeout(() => {
       setCopied(false)
     }, 2000)
-  }
-
-  const clickDeleteHandler = () => {
-    updateEncrypted(null)
-    updateWallet(null)
-    router.push("/")
   }
 
   return (
@@ -82,15 +71,6 @@ const Account = () => {
             <span>{copied ? "Copied!" : "Copy to clipboard"}</span>
             <Copy size={12} />
           </button>
-          {wallet?.address && (
-            <Button
-              variant="outline"
-              onClick={clickDeleteHandler}
-              className="mt-10 w-full rounded-full border-transparent py-6 text-green-500"
-            >
-              Delete local key
-            </Button>
-          )}
         </div>
       </div>
     </section>
