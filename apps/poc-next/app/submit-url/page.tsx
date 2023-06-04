@@ -2,20 +2,42 @@
 
 import { useState } from "react"
 import Image from "next/image"
+import { useWalletStore } from "@/store/wallet"
 
+import { getRawTransactionToSign } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 
 import Channel4IconBlack from "../../assets/channel-4-icon-black.svg"
 
 const SubmitUrl = () => {
+  const { wallet } = useWalletStore()
   const [url, setUrl] = useState<string | null>(null)
 
   const onUrlChangeHandler = (e: { target: { value: string } }) => {
     setUrl(e.target.value)
   }
 
-  const onClickShareItHandler = () => {
-    // TODO: send url to backend
+  const onClickShareItHandler = async () => {
+    const metaTx = await getRawTransactionToSign("submitURL", [
+      "Google",
+      "https://www.google.com",
+      ["first-tag", "second-tag"],
+    ])
+    console.log(wallet)
+    const signedSubmitURLtx = await wallet?.signTransaction(metaTx)
+    const response = await fetch(
+      process.env.NEXT_PUBLIC_API_URL + "/submit-url",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          signedMessage: signedSubmitURLtx,
+        }),
+      }
+    ).then((res) => res.json())
+    console.log(response)
   }
 
   return (
