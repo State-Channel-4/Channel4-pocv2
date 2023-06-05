@@ -13,7 +13,7 @@ import Channel4IconBlack from "../../assets/channel-4-icon-black.svg"
 
 const SubmitUrl = () => {
   const { encrypted } = useEncryptedStore()
-  const { password } = usePasswordStore()
+  const { password, token } = usePasswordStore()
   const [url, setUrl] = useState<string | null>(null)
 
   const onUrlChangeHandler = (e: { target: { value: string } }) => {
@@ -22,17 +22,7 @@ const SubmitUrl = () => {
 
   const onClickShareItHandler = async () => {
     const wallet = Wallet.fromEncryptedJsonSync(encrypted!, password!)
-
-    // login to backend
-    const signedMessage = await wallet.signMessage("login to backend")
-    const result = await fetch(process.env.NEXT_PUBLIC_API_URL + "/login", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ signedMessage }),
-    }).then((response) => response.json())
-    console.log(result)
-
-    /*const metaTx = await getRawTransactionToSign("submitURL", [
+    const metaTx = await getRawTransactionToSign("submitURL", [
       "Google",
       "https://www.google.com",
       ["first-tag", "second-tag"],
@@ -43,12 +33,13 @@ const SubmitUrl = () => {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
       },
       body: JSON.stringify({
         signedMessage: signedSubmitURLtx,
       }),
     }).then((res) => res.json())
-    console.log(response)*/
+    console.log(response)
   }
 
   return (
