@@ -29,7 +29,9 @@ const SignUp = () => {
   const clickLetMeInHandler = async () => {
     try {
       const wallet = Wallet.fromEncryptedJsonSync(encrypted!, password!)
-      const signedMessage = await wallet.signMessage("login to backend")
+      const signedMessage = await wallet.signMessage(
+        process.env.NEXT_PUBLIC_API_LOGIN_SECRET!
+      )
       const { user, token } = await fetch(
         process.env.NEXT_PUBLIC_API_URL + "/login",
         {

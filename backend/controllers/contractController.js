@@ -46,7 +46,7 @@ const login = async(req, res) => {
   try{
     const {signedMessage} = req.body
 
-    const message = "login to backend";
+    const message = process.env.LOGIN_SECRET;
     const signer = ethers.verifyMessage(message, signedMessage);
     const user = await User.findOne({walletAddress: signer })
     if (!user) {
