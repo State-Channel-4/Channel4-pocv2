@@ -21,13 +21,14 @@ const SubmitUrl = () => {
   }
 
   const onClickShareItHandler = async () => {
-    const wallet = Wallet.fromEncryptedJsonSync(encrypted!, password!)
-    const metaTx = await getRawTransactionToSign("submitURL", [
+    const functionName = "submitURL"
+    const params = [
       "Google",
       "https://www.google.com",
       ["first-tag", "second-tag"],
-    ])
-
+    ]
+    const metaTx = await getRawTransactionToSign(functionName, params)
+    const wallet = Wallet.fromEncryptedJsonSync(encrypted!, password!)
     const signedSubmitURLtx = await wallet?.signTransaction(metaTx)
     const response = await fetch(process.env.NEXT_PUBLIC_API_URL + "/url", {
       method: "POST",
@@ -37,6 +38,9 @@ const SubmitUrl = () => {
       },
       body: JSON.stringify({
         signedMessage: signedSubmitURLtx,
+        address: wallet.address,
+        functionName: functionName,
+        params: params,
       }),
     }).then((res) => res.json())
     console.log(response)
