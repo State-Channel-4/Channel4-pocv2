@@ -4,6 +4,7 @@ import { useState } from "react"
 import { useRouter } from "next/navigation"
 import { useEncryptedStore } from "@/store/encrypted"
 import { usePasswordStore } from "@/store/password"
+import { Wallet } from "ethers"
 
 import { Button } from "@/components/ui/button"
 
@@ -11,7 +12,8 @@ const CreateAccount = () => {
   const router = useRouter()
   const [isKeyDownloaded, setIsKeyDownloaded] = useState(false)
   const [isWalletCreated, setIsWalletCreated] = useState(false)
-  const { password, updatePassword } = usePasswordStore()
+  const { password, updateUserId, updateToken, updatePassword } =
+    usePasswordStore()
   const [error, setError] = useState<string | null>(null)
   const { encrypted, createEncrypted } = useEncryptedStore()
 
@@ -41,6 +43,18 @@ const CreateAccount = () => {
     const encryptedWallet = await createEncrypted(password!)
     if (encryptedWallet) {
       setIsWalletCreated(true)
+      const wallet = Wallet.fromEncryptedJsonSync(encryptedWallet!, password!)
+      const { user, token } = await fetch(
+        process.env.NEXT_PUBLIC_API_URL + "/user",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ address: wallet.address }),
+        }
+      ).then((response) => response.json())
+
+      updateUserId(user._id)
+      updateToken(token)
     } else {
       setError(
         "There is already a wallet created internally. Please delete local storage and try again."

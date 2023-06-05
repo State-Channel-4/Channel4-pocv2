@@ -5,6 +5,7 @@ import Image from "next/image"
 import { useRouter } from "next/navigation"
 import { useEncryptedStore } from "@/store/encrypted"
 import { usePasswordStore } from "@/store/password"
+import { Wallet } from "ethers"
 
 import { Button } from "@/components/ui/button"
 
@@ -14,7 +15,8 @@ import Channel4IconBlack from "../../assets/channel-4-icon-black.svg"
 const SignUp = () => {
   const router = useRouter()
   const { encrypted, updateEncrypted } = useEncryptedStore()
-  const { password, updatePassword } = usePasswordStore()
+  const { password, updateUserId, updateToken, updatePassword } =
+    usePasswordStore()
   const [error, setError] = useState<string | null>(null)
   const [hasAKey, setHasAKey] = useState(false)
   const [key, setKey] = useState<string | null>(null)
@@ -24,8 +26,21 @@ const SignUp = () => {
     updatePassword(e.target.value)
   }
 
-  const clickLetMeInHandler = () => {
+  const clickLetMeInHandler = async () => {
     try {
+      const wallet = Wallet.fromEncryptedJsonSync(encrypted!, password!)
+      const signedMessage = await wallet.signMessage("login to backend")
+      const { user, token } = await fetch(
+        process.env.NEXT_PUBLIC_API_URL + "/login",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ signedMessage }),
+        }
+      ).then((response) => response.json())
+
+      updateUserId(user._id)
+      updateToken(token)
       router.push("/me")
     } catch (error: any) {
       setError(error.message)
