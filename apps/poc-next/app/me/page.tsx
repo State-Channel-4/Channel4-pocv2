@@ -1,7 +1,7 @@
 "use client"
 
 import { ReactNode, useEffect, useState } from "react"
-import { useWalletStore } from "@/store/wallet"
+import { useEncryptedStore } from "@/store/encrypted"
 import { Copy } from "lucide-react"
 import { QRCodeSVG } from "qrcode.react"
 
@@ -9,20 +9,16 @@ import { cn } from "@/lib/utils"
 
 const Account = () => {
   const [copied, setCopied] = useState(false)
-  const { wallet } = useWalletStore()
-  const [address, setAddress] = useState(wallet?.address || "No address found")
+  const { address } = useEncryptedStore()
   const [shownAddress, setShownAddress] = useState("No address found")
 
   useEffect(() => {
-    if (wallet?.address) {
-      const prefix = wallet.address.replace(/(.{5})..+/, "$1…")
-      const postfix = wallet.address.substring(
-        wallet.address.length - 4,
-        wallet.address.length
-      )
+    if (address) {
+      const prefix = address.replace(/(.{5})..+/, "$1…")
+      const postfix = address.substring(address.length - 4, address.length)
       setShownAddress(prefix + postfix)
     }
-  }, [wallet?.address])
+  }, [address])
 
   const copyAddress = () => {
     navigator.clipboard.writeText(address)

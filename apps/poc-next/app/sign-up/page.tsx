@@ -4,8 +4,7 @@ import { useState } from "react"
 import Image from "next/image"
 import { useRouter } from "next/navigation"
 import { useEncryptedStore } from "@/store/encrypted"
-import { useWalletStore } from "@/store/wallet"
-import { Wallet } from "ethers"
+import { usePasswordStore } from "@/store/password"
 
 import { Button } from "@/components/ui/button"
 
@@ -15,21 +14,18 @@ import Channel4IconBlack from "../../assets/channel-4-icon-black.svg"
 const SignUp = () => {
   const router = useRouter()
   const { encrypted, updateEncrypted } = useEncryptedStore()
-  const { updateWallet } = useWalletStore()
-  const [password, setPassword] = useState<string | null>(null)
+  const { password, updatePassword } = usePasswordStore()
   const [error, setError] = useState<string | null>(null)
   const [hasAKey, setHasAKey] = useState(false)
   const [key, setKey] = useState<string | null>(null)
   const [encryptedExists, setEncryptedExists] = useState(false)
 
   const onPasswordChangeHandler = (e: { target: { value: string } }) => {
-    setPassword(e.target.value)
+    updatePassword(e.target.value)
   }
 
   const clickLetMeInHandler = () => {
     try {
-      const wallet = Wallet.fromEncryptedJsonSync(encrypted!, password!)
-      updateWallet(wallet)
       router.push("/me")
     } catch (error: any) {
       setError(error.message)
@@ -41,8 +37,7 @@ const SignUp = () => {
 
   const clickDeleteHandler = () => {
     updateEncrypted(null)
-    updateWallet(null)
-    setPassword(null)
+    updatePassword(null)
     setHasAKey(false)
     setKey(null)
     setEncryptedExists(false)
@@ -62,7 +57,7 @@ const SignUp = () => {
 
   const clickLoadKeyHandler = () => {
     updateEncrypted(key)
-    setPassword(null)
+    updatePassword(null)
     setEncryptedExists(true)
   }
 

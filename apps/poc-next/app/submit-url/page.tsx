@@ -2,7 +2,9 @@
 
 import { useState } from "react"
 import Image from "next/image"
-import { useWalletStore } from "@/store/wallet"
+import { useEncryptedStore } from "@/store/encrypted"
+import { usePasswordStore } from "@/store/password"
+import { Wallet } from "ethers"
 
 import { getRawTransactionToSign } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
@@ -10,7 +12,8 @@ import { Button } from "@/components/ui/button"
 import Channel4IconBlack from "../../assets/channel-4-icon-black.svg"
 
 const SubmitUrl = () => {
-  const { wallet } = useWalletStore()
+  const { encrypted } = useEncryptedStore()
+  const { password } = usePasswordStore()
   const [url, setUrl] = useState<string | null>(null)
 
   const onUrlChangeHandler = (e: { target: { value: string } }) => {
@@ -18,26 +21,34 @@ const SubmitUrl = () => {
   }
 
   const onClickShareItHandler = async () => {
-    const metaTx = await getRawTransactionToSign("submitURL", [
+    const wallet = Wallet.fromEncryptedJsonSync(encrypted!, password!)
+
+    // login to backend
+    const signedMessage = await wallet.signMessage("login to backend")
+    const result = await fetch(process.env.NEXT_PUBLIC_API_URL + "/login", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ signedMessage }),
+    }).then((response) => response.json())
+    console.log(result)
+
+    /*const metaTx = await getRawTransactionToSign("submitURL", [
       "Google",
       "https://www.google.com",
       ["first-tag", "second-tag"],
     ])
-    console.log(wallet)
+
     const signedSubmitURLtx = await wallet?.signTransaction(metaTx)
-    const response = await fetch(
-      process.env.NEXT_PUBLIC_API_URL + "/submit-url",
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          signedMessage: signedSubmitURLtx,
-        }),
-      }
-    ).then((res) => res.json())
-    console.log(response)
+    const response = await fetch(process.env.NEXT_PUBLIC_API_URL + "/url", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        signedMessage: signedSubmitURLtx,
+      }),
+    }).then((res) => res.json())
+    console.log(response)*/
   }
 
   return (

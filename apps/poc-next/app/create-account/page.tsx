@@ -3,7 +3,7 @@
 import { useState } from "react"
 import { useRouter } from "next/navigation"
 import { useEncryptedStore } from "@/store/encrypted"
-import { useWalletStore } from "@/store/wallet"
+import { usePasswordStore } from "@/store/password"
 
 import { Button } from "@/components/ui/button"
 
@@ -11,10 +11,9 @@ const CreateAccount = () => {
   const router = useRouter()
   const [isKeyDownloaded, setIsKeyDownloaded] = useState(false)
   const [isWalletCreated, setIsWalletCreated] = useState(false)
-  const [password, setPassword] = useState<string | null>(null)
+  const { password, updatePassword } = usePasswordStore()
   const [error, setError] = useState<string | null>(null)
-  const { createWallet } = useWalletStore()
-  const { encrypted, updateEncrypted } = useEncryptedStore()
+  const { encrypted, createEncrypted } = useEncryptedStore()
 
   const clickDownloadKeyHandler = async () => {
     try {
@@ -35,13 +34,12 @@ const CreateAccount = () => {
   }
 
   const onPasswordChangeHandler = (e: { target: { value: string } }) => {
-    setPassword(e.target.value)
+    updatePassword(e.target.value)
   }
 
   const clickCreateAccountHandler = async () => {
-    const encryptedWallet = await createWallet(password!)
+    const encryptedWallet = await createEncrypted(password!)
     if (encryptedWallet) {
-      updateEncrypted(encryptedWallet)
       setIsWalletCreated(true)
     } else {
       setError(
