@@ -175,7 +175,11 @@ const like = async (req, res) => {
  */
 const submit_url = async(req, res) => {
   try {
-    const { title, url, submittedBy, tags } = req.body; // Get the title, URL, and submitter from the request body
+    const title = req.body.params[0];
+    const url = req.body.params[1];
+    const tags = []; //req.body.params[2]; // TODO: Send tags as an array of tag IDs
+    const submittedBy = req.body.userId;
+
     const existingUrl = await Url.findOne({ url }); // Check if the URL already exists in the database
     if (existingUrl) {
       return res.status(400).json({ error: 'URL already exists' });
