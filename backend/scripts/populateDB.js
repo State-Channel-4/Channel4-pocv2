@@ -47,6 +47,11 @@ async function generateRandomTags() {
       createdBy: createdBy,
       syncedToBlockchain: faker.random.boolean()
     });
+    try {
+      await tag.save();
+    } catch (error) {
+      // the tag already exists in the database
+    }
     tags.push(tag);
   }
   return tags;
