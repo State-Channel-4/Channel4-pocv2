@@ -8,6 +8,7 @@ import { RiCloseLine, RiHeartFill, RiMenu2Line } from "react-icons/ri"
 import { siteConfig } from "@/config/site"
 
 import Channel4Icon from "../assets/channel-4-icon-v2.svg"
+import { Button } from "./ui/button"
 
 type Props = {
   iconColor?: string
@@ -76,6 +77,17 @@ export function BottomNavigation({ iconColor = "#D0D1D2" }: Props) {
           </div>
         </nav>
       </div>
+      <Button
+        onClick={handleMenuClick}
+        variant={"ghost"}
+        className="mx-3 flex cursor-pointer items-center bg-transparent"
+      >
+        {isMenuOpen ? (
+          <RiCloseLine size="25px" fill={iconColor} />
+        ) : (
+          <RiMenu2Line size="25px" fill={iconColor} />
+        )}
+      </Button>
     </div>
   )
 }

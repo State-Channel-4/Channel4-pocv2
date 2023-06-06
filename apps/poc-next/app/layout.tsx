@@ -1,10 +1,11 @@
-import "@/styles/globals.css"
-import { Metadata } from "next"
+import "@/styles/globals.css";
+import { Metadata } from "next";
+
+
 
 import { siteConfig } from "@/config/site"
 import { fontSans } from "@/lib/fonts"
 import { cn } from "@/lib/utils"
-import { BottomNavigation } from "@/components/bottom-nav"
 import { SiteHeader } from "@/components/site-header"
 import { ThemeProvider } from "@/components/theme-provider"
 
@@ -44,7 +45,6 @@ export default function RootLayout({ children }: RootLayoutProps) {
             <div className="relative flex h-screen flex-col">
               <SiteHeader />
               <div className="flex-1">{children}</div>
-              <BottomNavigation />
             </div>
           </ThemeProvider>
         </body>
