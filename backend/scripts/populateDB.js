@@ -1,7 +1,7 @@
 const faker = require('faker');
+const ethers = require('ethers');
 const mongoose = require('mongoose');
 const { User, Tag, Url } = require('../models/schema');
-const cc = require('../controllers/contractController');
 require('dotenv').config()
 
 // Connect to MongoDB
@@ -36,11 +36,11 @@ async function getRandomUserId() {
 // Helper function to generate a random array of tags
 async function generateRandomTags() {
   const tagNames = ['gaming', 'retro', 'technology', 'sports', 'music'];
-  
+
   const tags = [];
   const tagCount = faker.random.number({ min: 1, max: 3 });
   for (let i = 0; i < tagCount; i++) {
-    const createdBy = getRandomUserId();
+    const createdBy = await getRandomUserId();
     const tagName = faker.random.arrayElement(tagNames);
     const tag = new Tag({
       name: tagName,
@@ -53,27 +53,28 @@ async function generateRandomTags() {
 }
 
 // Helper function to generate a random user
-function generateRandomUser() {
+async function generateRandomUser() {
   const user = new User({
-    walletAddress: faker.internet.ip(),
+    walletAddress: ethers.Wallet.createRandom().address,
     likedUrls: [],
     submittedUrls: [],
     createdAt: faker.date.past(),
     updatedAt: faker.date.recent(),
     syncedToBlockchain: faker.random.boolean()
   });
+  await user.save();
   return user;
 }
 
 // Helper function to generate a random URL
-function generateRandomUrl() {
-    const createdBy = getRandomUserId();
+async function generateRandomUrl() {
+    const createdBy = await getRandomUserId();
     const url = new Url({
         title: faker.lorem.sentence(),
         url: faker.internet.url(),
         submittedBy: createdBy,
         likes: faker.random.number({ min: 0, max: 100 }),
-        tags: generateRandomTags(),
+        tags: await generateRandomTags(),
         createdAt: faker.date.past(),
         updatedAt: faker.date.recent(),
         syncedToBlockchain: faker.random.boolean()
@@ -85,14 +86,13 @@ function generateRandomUrl() {
 async function populateData() {
   try {
     // Create a random user
-    const user = generateRandomUser();
-    const createdUser = await cc.create_user({ body: { address: user.walletAddress } });
+    const createdUser = await generateRandomUser();
 
     // Create random URLs
     const urlCount = 10; // Adjust the number of URLs to create
     const urls = [];
     for (let i = 0; i < urlCount; i++) {
-      const url = generateRandomUrl();
+      const url = await generateRandomUrl();
       url.submittedBy = createdUser._id;
       urls.push(url);
     }
