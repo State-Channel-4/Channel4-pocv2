@@ -44,7 +44,7 @@ export function BottomNavigation({ iconColor = "#D0D1D2" }: Props) {
           </Link>
         </nav>
       ) : null}
-      <div className="bg-gray">
+      <div className="bg-dark">
         <nav className="flex w-screen justify-between px-3 py-5 lg:container lg:px-0">
           <Link
             href={siteConfig.links.discover}
