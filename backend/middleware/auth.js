@@ -33,8 +33,34 @@ const verifySignedMessage = async (req, res, next) => {
     }
 };
 
+const verifySignedFunctionMessage = async (req, res, next) => {
+    try {
+        const { signedMessage, address, functionName, params } = req.body;
+        // Recreate the meta transaction
+        const urlContract = new ethers.Contract(
+            process.env.CONTRACT_ADDRESS,
+            process.env.ABI
+        );
+        const metaTransaction = await urlContract[functionName].populateTransaction(...params);
+        // Recover the address from the signature
+        const recoveredAddress = ethers.recoverAddress(metaTransaction.data, signedMessage);
+        console.log('after recoveredAddress', recoveredAddress)
+        // Compare the recovered address with the provided address
+        if (recoveredAddress.toLowerCase() === address.toLowerCase()) {
+            next();
+        } else {
+            res.status(401).json({ error: 'Invalid signature' });
+        }
+    } catch (error) {
+        console.log(error)
+        res.status(500).json({ error: 'Error verifying signature' });
+    }
+};
+
+
 module.exports = {
   authenticate,
   generateToken,
-  verifySignedMessage
+  verifySignedMessage,
+  verifySignedFunctionMessage,
 };

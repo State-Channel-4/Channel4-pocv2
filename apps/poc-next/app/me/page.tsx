@@ -1,14 +1,24 @@
 "use client"
 
-import { ReactNode, useState } from "react"
+import { ReactNode, useEffect, useState } from "react"
+import { useEncryptedStore } from "@/store/encrypted"
 import { Copy } from "lucide-react"
 import { QRCodeSVG } from "qrcode.react"
 
 import { cn } from "@/lib/utils"
 
 const Account = () => {
-  const [address, setAddress] = useState("qZw89134ads123aaodaBx") // localStorage.getItem('address')
   const [copied, setCopied] = useState(false)
+  const { address } = useEncryptedStore()
+  const [shownAddress, setShownAddress] = useState("No address found")
+
+  useEffect(() => {
+    if (address) {
+      const prefix = address.replace(/(.{5})..+/, "$1…")
+      const postfix = address.substring(address.length - 4, address.length)
+      setShownAddress(prefix + postfix)
+    }
+  }, [address])
 
   const copyAddress = () => {
     navigator.clipboard.writeText(address)
@@ -17,6 +27,7 @@ const Account = () => {
       setCopied(false)
     }, 2000)
   }
+
   return (
     <section className="mx-auto flex max-w-xl flex-col gap-6 p-6">
       <h2 className="text-left font-semibold">My account</h2>
@@ -45,7 +56,7 @@ const Account = () => {
             className="w-fit rounded-lg bg-white p-2"
           />
           <p className="p-2"></p>
-          <p className="text-slate-400">{address}</p>
+          <p className="text-slate-400">{shownAddress}</p>
           <button
             onClick={copyAddress}
             className={cn(

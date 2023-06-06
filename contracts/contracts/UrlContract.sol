@@ -22,6 +22,7 @@ contract UrlContract {
 
     struct User {
         mapping (uint256 => bool) likedURLs;
+        uint256 numberOfLikedURLs;
         uint256[] submittedURLs;
     }
 
@@ -149,16 +150,8 @@ contract UrlContract {
     /// @notice Get all liked URLs of a specific user
     /// @param userAddress User id
     function getUserLikedURLs(address userAddress) public view returns (URL[] memory) {
-        // this is inconvenient but it is free in read mode
-        // get the length of likedURLs
-        uint256 likedLength = 0;
-        for (uint256 i = 0; i < urls.length; i++) {
-            if (users[userAddress].likedURLs[i] == true){
-                likedLength++;
-            }
-        }
         // get the actual likedURLs
-        URL [] memory result = new URL[](likedLength);
+        URL [] memory result = new URL[](users[userAddress].numberOfLikedURLs);
         for (uint256 i = 0; i < urls.length; i++) {
             if (users[userAddress].likedURLs[i] == true){
                 result[i] = urls[i];
@@ -183,6 +176,7 @@ contract UrlContract {
     function likeURL(uint256 index) public {
         address userAddress = msg.sender;
         require(users[userAddress].likedURLs[index] == false, "URL already liked");
+        users[userAddress].numberOfLikedURLs = users[userAddress].numberOfLikedURLs + 1;
         users[userAddress].likedURLs[index] = true;
         urls[index].likes = urls[index].likes + 1;
     }
@@ -192,6 +186,7 @@ contract UrlContract {
     function unlikeURL(uint256 index) public {
         address userAddress = msg.sender;
         require(users[userAddress].likedURLs[index] == true, "URL already unliked");
+        users[userAddress].numberOfLikedURLs = users[userAddress].numberOfLikedURLs - 1;
         users[userAddress].likedURLs[index] = false;
         urls[index].likes = urls[index].likes - 1;
     }
