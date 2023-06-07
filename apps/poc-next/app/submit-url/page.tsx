@@ -1,13 +1,15 @@
 "use client"
 
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import Image from "next/image"
 import { useEncryptedStore } from "@/store/encrypted"
 import { usePasswordStore } from "@/store/password"
+import { Tag, TagMap } from "@/types"
 import { Wallet } from "ethers"
 
 import { getRawTransactionToSign } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
+import TagRow from "@/components/ui/tag-row"
 
 import Channel4IconBlack from "../../assets/channel-4-icon-black.svg"
 
@@ -16,6 +18,8 @@ const SubmitUrl = () => {
   const { password, token, userId } = usePasswordStore()
   const [title, setTitle] = useState<string | null>(null)
   const [url, setUrl] = useState<string | null>(null)
+  const [showTags, setShowTags] = useState<TagMap>(new Map())
+  const [selectedTags, setSelectedTags] = useState<TagMap>(new Map())
 
   const onTitleChangeHandler = (e: { target: { value: string } }) => {
     setTitle(e.target.value)
@@ -25,9 +29,31 @@ const SubmitUrl = () => {
     setUrl(e.target.value)
   }
 
+  const getTags = async () => {
+    try {
+      const response = await fetch(
+        process.env.NEXT_PUBLIC_API_URL + "/tag"
+      ).then((res) => res.json())
+      let tags: TagMap = new Map()
+      if ("tags" in response) {
+        response.tags.forEach((tag: Tag) => {
+          tags.set(tag._id, tag)
+        })
+      }
+      setShowTags(tags)
+    } catch (error) {
+      console.log(error)
+      setShowTags(new Map())
+    }
+  }
+
+  useEffect(() => {
+    getTags()
+  }, [])
+
   const onClickShareItHandler = async () => {
     const functionName = "submitURL"
-    const params = [title, url, ["first-tag", "second-tag"]]
+    const params = [title, url, Array.from(selectedTags.keys())]
     const metaTx = await getRawTransactionToSign(functionName, params)
     const wallet = Wallet.fromEncryptedJsonSync(encrypted!, password!)
     const signedSubmitURLtx = await wallet?.signTransaction(metaTx)
@@ -49,6 +75,7 @@ const SubmitUrl = () => {
     console.log(response)
     setTitle(null)
     setUrl(null)
+    setSelectedTags(new Map())
   }
 
   return (
@@ -80,12 +107,11 @@ const SubmitUrl = () => {
       </div>
       <div className="space-y-2 pb-4">
         <p>Add tags (optional)</p>
-        <input
-          type={"text"}
-          /* TODO: how to save multiple tags? use a select?
-          value={url || ""}
-          onChange={onUrlChangeHandler}*/
-          className="bg-gray h-12 w-full rounded-lg px-2 py-1"
+        <TagRow
+          selectable
+          shownTags={showTags}
+          selectedTags={selectedTags}
+          setSelectedTags={setSelectedTags}
         />
       </div>
       <Button

@@ -177,7 +177,7 @@ const submit_url = async(req, res) => {
   try {
     const title = req.body.params[0];
     const url = req.body.params[1];
-    const tags = []; //req.body.params[2]; // TODO: Send tags as an array of tag IDs
+    const tags = req.body.params[2];
     const submittedBy = req.body.userId;
 
     const existingUrl = await Url.findOne({ url }); // Check if the URL already exists in the database

@@ -1,18 +1,13 @@
-"use client";
+"use client"
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
-import { Tag, TagMap } from "@/types";
-import { CheckCircle2, PlusCircle } from "lucide-react";
+import { useState } from "react"
+import { useRouter } from "next/navigation"
+import { Tag, TagMap } from "@/types"
+import { CheckCircle2, PlusCircle } from "lucide-react"
 
+import { cn } from "@/lib/utils"
 
-
-import { cn } from "@/lib/utils";
-
-
-
-import { buttonVariants } from "./button";
-
+import { buttonVariants } from "./button"
 
 interface TagListProps {
   tags: TagMap

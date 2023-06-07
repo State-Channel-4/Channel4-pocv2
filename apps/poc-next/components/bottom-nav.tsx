@@ -8,7 +8,6 @@ import { RiCloseLine, RiHeartFill, RiMenu2Line } from "react-icons/ri"
 import { siteConfig } from "@/config/site"
 
 import Channel4Icon from "../assets/channel-4-icon-v2.svg"
-import { Button } from "./ui/button"
 
 type Props = {
   iconColor?: string
