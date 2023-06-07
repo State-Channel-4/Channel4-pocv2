@@ -28,7 +28,13 @@ describe("UrlContract", function () {
       urlObj.url,
       urlObj.tags,
     );
-    return { urlContract, owner, otherAccount1, otherAccount2 };
+    return { urlContract, owner, otherAccount1, otherAccount2, urlObj };
+  }
+
+  async function likeURLFixture(){
+    const { urlContract, owner, otherAccount1, otherAccount2, urlObj } = await loadFixture(submitURLFixture);
+    await urlContract.connect(otherAccount1).likeURL(0);
+    return { urlContract, owner, otherAccount1, otherAccount2, urlObj };
   }
 
 
@@ -54,19 +60,14 @@ describe("UrlContract", function () {
 
 
   describe("Submit URL", async function () {
-    const title = "Google";
-    const url = "https://www.google.com/";
-    const tags = [firstTag, "web search"];
-    const urlObj = { title, url, tags };
-
     it("Should successfully submit a URL", async function () {
-      const { urlContract } = await loadFixture(submitURLFixture);
+      const { urlContract, urlObj } = await loadFixture(submitURLFixture);
 
       const allUrls = await urlContract.getAllURLs();
       const allTags = await urlContract.getAllTags();
       const firstTagObject = allTags[0];
       expect( allUrls.length ).to.equal(1);
-      expect( allTags.length ).to.equal(tags.length); // keep in mind that firstTag is included
+      expect( allTags.length ).to.equal(urlObj.tags.length); // keep in mind that firstTag is included
 
       const urlIdsInFirstTag = firstTagObject.urlIds;
 
@@ -75,7 +76,7 @@ describe("UrlContract", function () {
     });
 
     it("Should have the correct URL object attributes", async function () {
-      const { urlContract, otherAccount1 } = await loadFixture(submitURLFixture);
+      const { urlContract, otherAccount1, urlObj } = await loadFixture(submitURLFixture);
 
       const allUrls = await urlContract.getAllURLs();
       const firstUrlObject = allUrls[0];
@@ -83,29 +84,33 @@ describe("UrlContract", function () {
       expect( firstUrlObject.title ).to.equal(urlObj.title);
       expect( firstUrlObject.url ).to.equal(urlObj.url);
       expect( firstUrlObject.submittedBy ).to.equal(otherAccount1.address);
-      expect( firstUrlObject.tagIds.length ).to.equal(tags.length);
+      expect( firstUrlObject.tagIds.length ).to.equal(urlObj.tags.length);
       // check tag ids are correct
-      for (let i = 0, ni = tags.length; i<ni; i++){
+      for (let i = 0, ni = urlObj.tags.length; i<ni; i++){
         expect( firstUrlObject.tagIds[i].toNumber() ).to.equal(i);
       }
     });
 
     it("Should not add new tags if they already exist", async function () {
-      const { urlContract } = await loadFixture(submitURLFixture);
+      const { urlContract, urlObj } = await loadFixture(submitURLFixture);
 
       const allTags = await urlContract.getAllTags();
-      expect( allTags.length ).to.equal(tags.length);
+      expect( allTags.length ).to.equal(urlObj.tags.length);
     });
 
   });
 
   describe("Like a URL", async function () {
     it("Should successfully like a URL", async function () {
-      const { urlContract, otherAccount1 } = await loadFixture(submitURLFixture);
+      const { urlContract, otherAccount1 } = await loadFixture(likeURLFixture);
 
-      await urlContract.connect(otherAccount1).likeURL(0);
       const url = await urlContract.getURL(0);
       expect( url.likes.toNumber() ).to.equal(1);
+
+      const userLikedURLs = await urlContract.getUserLikedURLs(otherAccount1.address);
+      expect( userLikedURLs.length ).to.equal(1);
+      expect (userLikedURLs[0].likes.toNumber() ).to.equal(1);
+
     });
   });
 });

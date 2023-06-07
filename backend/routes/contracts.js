@@ -1,6 +1,6 @@
 const express = require('express')
 const cc = require('../controllers/contractController')
-const { authenticate, verifySignedMessage } = require('../middleware/auth');
+const { authenticate, verifySignedMessage, verifySignedFunctionMessage } = require('../middleware/auth');
 
 
 const router = express.Router()
@@ -149,7 +149,7 @@ router.put('/like/:id', authenticate, verifySignedMessage, cc.like)
  *         description: Server error
  */
 // submit url
-router.post('/url', authenticate, verifySignedMessage, cc.submit_url)
+router.post('/url', authenticate, verifySignedFunctionMessage, cc.submit_url)
 
 
 /**

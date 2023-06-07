@@ -3,7 +3,7 @@
 import { useState } from "react"
 import { useRouter } from "next/navigation"
 import { useEncryptedStore } from "@/store/encrypted"
-import { useWalletStore } from "@/store/wallet"
+import { usePasswordStore } from "@/store/password"
 import { Wallet } from "ethers"
 
 import { Button } from "@/components/ui/button"
@@ -12,10 +12,10 @@ const CreateAccount = () => {
   const router = useRouter()
   const [isKeyDownloaded, setIsKeyDownloaded] = useState(false)
   const [isWalletCreated, setIsWalletCreated] = useState(false)
-  const [password, setPassword] = useState<string | null>(null)
+  const { password, updateUserId, updateToken, updatePassword } =
+    usePasswordStore()
   const [error, setError] = useState<string | null>(null)
-  const { updateWallet } = useWalletStore()
-  const { encrypted, updateEncrypted } = useEncryptedStore()
+  const { encrypted, createEncrypted } = useEncryptedStore()
 
   const clickDownloadKeyHandler = async () => {
     try {
@@ -36,15 +36,30 @@ const CreateAccount = () => {
   }
 
   const onPasswordChangeHandler = (e: { target: { value: string } }) => {
-    setPassword(e.target.value)
+    updatePassword(e.target.value)
   }
 
   const clickCreateAccountHandler = async () => {
-    const wallet = Wallet.createRandom()
-    const encryptedWallet = await wallet.encrypt(password!)
-    updateWallet(wallet)
-    updateEncrypted(encryptedWallet)
-    setIsWalletCreated(true)
+    const encryptedWallet = await createEncrypted(password!)
+    if (encryptedWallet) {
+      setIsWalletCreated(true)
+      const wallet = Wallet.fromEncryptedJsonSync(encryptedWallet!, password!)
+      const { user, token } = await fetch(
+        process.env.NEXT_PUBLIC_API_URL + "/user",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ address: wallet.address }),
+        }
+      ).then((response) => response.json())
+
+      updateUserId(user._id)
+      updateToken(token)
+    } else {
+      setError(
+        "There is already a wallet created internally. Please delete local storage and try again."
+      )
+    }
   }
 
   return (

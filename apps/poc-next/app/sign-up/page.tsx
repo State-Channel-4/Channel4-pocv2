@@ -4,7 +4,7 @@ import { useState } from "react"
 import Image from "next/image"
 import { useRouter } from "next/navigation"
 import { useEncryptedStore } from "@/store/encrypted"
-import { useWalletStore } from "@/store/wallet"
+import { usePasswordStore } from "@/store/password"
 import { Wallet } from "ethers"
 
 import { Button } from "@/components/ui/button"
@@ -15,20 +15,35 @@ import Channel4IconBlack from "../../assets/channel-4-icon-black.svg"
 const SignUp = () => {
   const router = useRouter()
   const { encrypted, updateEncrypted } = useEncryptedStore()
-  const { updateWallet } = useWalletStore()
-  const [password, setPassword] = useState<string | null>(null)
+  const { password, updateUserId, updateToken, updatePassword } =
+    usePasswordStore()
   const [error, setError] = useState<string | null>(null)
+  const [hasAKey, setHasAKey] = useState(false)
+  const [key, setKey] = useState<string | null>(null)
   const [encryptedExists, setEncryptedExists] = useState(false)
 
   const onPasswordChangeHandler = (e: { target: { value: string } }) => {
-    setPassword(e.target.value)
+    updatePassword(e.target.value)
   }
 
-  const clickLetMeInHandler = () => {
+  const clickLetMeInHandler = async () => {
     try {
       const wallet = Wallet.fromEncryptedJsonSync(encrypted!, password!)
-      updateWallet(wallet)
-      router.push("/discover")
+      const signedMessage = await wallet.signMessage(
+        process.env.NEXT_PUBLIC_API_LOGIN_SECRET!
+      )
+      const { user, token } = await fetch(
+        process.env.NEXT_PUBLIC_API_URL + "/login",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ signedMessage }),
+        }
+      ).then((response) => response.json())
+
+      updateUserId(user._id)
+      updateToken(token)
+      router.push("/me")
     } catch (error: any) {
       setError(error.message)
       setTimeout(() => {
@@ -39,7 +54,10 @@ const SignUp = () => {
 
   const clickDeleteHandler = () => {
     updateEncrypted(null)
-    updateWallet(null)
+    updatePassword(null)
+    setHasAKey(false)
+    setKey(null)
+    setEncryptedExists(false)
   }
 
   const clickStartJourneyHandler = () => {
@@ -50,9 +68,28 @@ const SignUp = () => {
     }
   }
 
+  const onLoadKeyChangeHandler = (e: { target: { value: string } }) => {
+    setKey(e.target.value)
+  }
+
+  const clickLoadKeyHandler = () => {
+    updateEncrypted(key)
+    updatePassword(null)
+    setEncryptedExists(true)
+  }
+
+  const clickCancelKeyHandler = () => {
+    setHasAKey(false)
+    setKey(null)
+  }
+
+  const clickAlreadyHaveKeyHandler = () => {
+    setHasAKey(true)
+  }
+
   return (
-    <div className="mx-7 flex flex-col justify-center">
-      <div className="bg-c4-gradient-main my-5 flex h-40 rounded-br-3xl rounded-tl-3xl">
+    <div className="mx-7 flex flex-col justify-center lg:container">
+      <div className="bg-c4-gradient-main my-5 flex h-40 justify-evenly rounded-br-3xl rounded-tl-3xl">
         <Image
           priority
           className="relative top-12 z-10"
@@ -76,6 +113,7 @@ const SignUp = () => {
             <p>Password:</p>
             <input
               type={"password"}
+              value={password || ""}
               onChange={onPasswordChangeHandler}
               className="bg-gray w-full rounded-sm px-2 py-1"
             />
@@ -104,12 +142,41 @@ const SignUp = () => {
           >
             Start your journey
           </Button>
-          <Button
-            variant="outline"
-            className="mt-4 rounded-full border-transparent py-6 text-green-500 hover:border-green-500"
-          >
-            Already have the key?
-          </Button>
+          {hasAKey ? (
+            <div className="my-5 mb-24 flex flex-col items-center space-y-5">
+              <p>Your key:</p>
+              <input
+                type={"text"}
+                value={key || ""}
+                onChange={onLoadKeyChangeHandler}
+                className="bg-gray h-40 w-full rounded-sm px-2"
+              />
+              <Button
+                variant="outline"
+                onClick={clickLoadKeyHandler}
+                className="rounded-full border-green-500 py-6 text-green-500"
+              >
+                Load key
+              </Button>
+              <Button
+                variant="outline"
+                onClick={clickCancelKeyHandler}
+                className="mt-4 rounded-full border-transparent py-6 text-green-500 hover:border-green-500"
+              >
+                Cancel
+              </Button>
+            </div>
+          ) : (
+            <>
+              <Button
+                variant="outline"
+                onClick={clickAlreadyHaveKeyHandler}
+                className="mt-4 rounded-full border-transparent py-6 text-green-500 hover:border-green-500"
+              >
+                Already have the key?
+              </Button>
+            </>
+          )}
         </div>
       )}
     </div>
