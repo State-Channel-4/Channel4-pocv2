@@ -321,7 +321,7 @@ router.delete("/url", authenticate, verifySignedMessage, cc.delete_url);
  *         description: Server error
  */
 // creating tags
-router.post("/tag", authenticate, verifySignedMessage, cc.create_tag);
+router.post("/tag", authenticate, verifySignedFunctionMessage, cc.create_tag);
 
 /**
  * @swagger
