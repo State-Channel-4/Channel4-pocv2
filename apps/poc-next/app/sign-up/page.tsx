@@ -37,7 +37,7 @@ const CreateAccount = () => {
   }
 
   const clickAllDoneHandler = () => {
-    router.push(siteConfig.links.discover)
+    router.push(siteConfig.links.home)
   }
 
   const onPasswordChangeHandler = (e: { target: { value: string } }) => {
