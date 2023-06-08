@@ -67,11 +67,11 @@ const Discover = () => {
         console.error("Error parsing JSON:", error)
       }
     }
-<<<<<<< HEAD
+  }
 
-    setActiveContent(__testLink)
-  }, [selectedTags])
-
+  const likeOrUnlikeActiveContent = (contentId: string) => {
+    if (!activeContent) return
+    if (userLikes.includes(contentId)) {
       // TODO: Update the actual logged in user likes
       setUserLikes((prev) => prev.filter((like) => like !== contentId))
     } else {
@@ -130,43 +130,13 @@ const Discover = () => {
       <div className="col-span-1 flex max-w-[900px] flex-col items-start justify-end gap-4">
         {activeContent && (
           <div className="flex w-full flex-col gap-1 rounded-lg">
->>>>>>> origin/main
             <p className="font-mono text-sm uppercase tracking-widest text-yellow-300">
               now showing
             </p>
             <p className="text-2xl font-semibold">{activeContent.title}</p>
+            <p className="text-primary/70 text-sm">
               by {activeContent.submittedBy}
             </p>
-<<<<<<< HEAD
-          </div>
-        )}
-        <Button
-          className={cn(
-            buttonVariants({ size: "lg" }),
-            "bg-c4-gradient rounded-full font-bold transition hover:scale-105"
-          )}
-          onClick={() => console.log("clicked")}
-        >
-          next
-        </Button>
-        <hr className="bg-c4-gradient h-1 w-full border xl:w-3/4" />
-        {selectedTags.size === 0 && (
-          <p>
-            You haven&apos;t selected any tags yet. Go to the home page to
-            select some tags.
-          </p>
-        )}
-        {selectedTags.size > 0 && <TagList tags={selectedTags} />}
-        <Link href="/" passHref>
-          <Button variant={"secondary"} size="sm">
-            Choose other tags
-          </Button>
-        </Link>
-        <hr className="bg-c4-gradient-main h-1 w-full border xl:w-3/4" />
-      </div>
-      <div className="col-span-1 xl:col-span-2">
-        {activeContent && <SiteFrame content={activeContent} />}
-=======
             <p className="p-2"></p>
             {/* Like button */}
             <div className="flex items-center gap-2">
@@ -224,3 +194,14 @@ const Discover = () => {
             <TagList tags={selectedTags.current} />
             <Link href="/" passHref>
               <Button variant={"ghost"} size="sm">
+                Choose other tags
+              </Button>
+            </Link>
+          </>
+        )}
+      </div>
+    </section>
+  )
+}
+
+export default Discover
