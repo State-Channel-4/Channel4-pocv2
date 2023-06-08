@@ -37,6 +37,7 @@ export const siteConfig = {
     github: "https://github.com/State-Channel-4/Channel4-pocv2",
     docs: "https://github.com/State-Channel-4/Channel4-pocv2",
     home: "/",
+    me: "/me",
     signUp: "/sign-up",
     account: "/account",
     discover: "/discover",
