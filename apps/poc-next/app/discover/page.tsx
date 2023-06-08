@@ -1,17 +1,22 @@
-"use client"
+"use client";
 
-import { useEffect, useRef, useState } from "react"
-import Link from "next/link"
-import { C4Content, TagMap } from "@/types"
-import { LinkIcon, ThumbsUpIcon } from "lucide-react"
-import useSWR from "swr"
+import { useEffect, useRef, useState } from "react";
+import Link from "next/link";
+import { C4Content, TagMap } from "@/types";
+import { LinkIcon, ThumbsUpIcon } from "lucide-react";
+import useSWR from "swr";
 
-import { cn } from "@/lib/utils"
-import { Button, buttonVariants } from "@/components/ui/button"
-import TagList from "@/components/ui/tag-list"
 
-import SiteFrame from "./SiteFrame"
-import { feedbackMessages, getMix, updateLikesInApi } from "./utils"
+
+import { cn } from "@/lib/utils";
+import { Button, buttonVariants } from "@/components/ui/button";
+import TagList from "@/components/ui/tag-list";
+
+
+
+import SiteFrame from "./SiteFrame";
+import { feedbackMessages, getMix, updateLikesInApi } from "./utils";
+
 
 // TODO:
 // - [ ] Get links based on tags from API
@@ -42,6 +47,11 @@ const Discover = () => {
       }
 
       setActiveContent(content[mixIndex])
+      if (mixIndex === content.length - 1) {
+        setMixCompleted(true)
+        setMixIndex(0)
+        return
+      }
     },
   })
 
@@ -67,11 +77,11 @@ const Discover = () => {
     } else {
       setUserLikes((prev) => [...prev, contentId])
     }
-    activeContent.likes = userLikes
+    activeContent.likes = userLikes.includes(contentId)
       ? activeContent.likes - 1
       : activeContent.likes + 1
 
-    updateLikesInApi(contentId)
+    // updateLikesInApi(contentId)
   }
 
   const changeActiveContent = () => {
