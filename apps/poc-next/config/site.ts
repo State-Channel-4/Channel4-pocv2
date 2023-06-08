@@ -15,7 +15,11 @@ export const siteConfig = {
     },
     {
       title: "Add tag",
-      href: "/tags/new",
+      href: "/submit-tag",
+    },
+    {
+      title: "Me",
+      href: "/me",
     },
   ],
   secondaryNav: [

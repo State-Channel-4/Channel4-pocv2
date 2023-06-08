@@ -10,8 +10,8 @@ import { cn } from "@/lib/utils"
 
 const Account = () => {
   const [copied, setCopied] = useState(false)
-  const [submittedURLs, setSubmittedURLs] = useState(4)
-  const [likedURLs, setLikedURLs] = useState(4)
+  const [submittedURLs, setSubmittedURLs] = useState(0)
+  const [likedURLs, setLikedURLs] = useState(0)
   const { address } = useEncryptedStore()
   const { userId, token } = usePasswordStore()
   const [shownAddress, setShownAddress] = useState("No address found")
