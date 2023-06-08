@@ -2,11 +2,13 @@
 
 import { useEffect, useState } from "react"
 import Image from "next/image"
+import { useRouter } from "next/navigation"
 import { useEncryptedStore } from "@/store/encrypted"
 import { usePasswordStore } from "@/store/password"
 import { Tag, TagMap } from "@/types"
 import { Wallet } from "ethers"
 
+import { siteConfig } from "@/config/site"
 import { getRawTransactionToSign } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import TagRow from "@/components/ui/tag-row"
@@ -14,6 +16,7 @@ import TagRow from "@/components/ui/tag-row"
 import Channel4IconBlack from "../../assets/channel-4-icon-black.svg"
 
 const SubmitUrl = () => {
+  const router = useRouter()
   const { encrypted } = useEncryptedStore()
   const { password, token, userId } = usePasswordStore()
   const [title, setTitle] = useState<string | null>(null)
@@ -48,8 +51,11 @@ const SubmitUrl = () => {
   }
 
   useEffect(() => {
+    if (!password || !token || !userId) {
+      router.push(siteConfig.links.signIn)
+    }
     getTags()
-  }, [])
+  }, [password, router, token, userId])
 
   const onClickShareItHandler = async () => {
     const functionName = "submitURL"

@@ -1,14 +1,17 @@
 "use client"
 
 import { ReactNode, useEffect, useState } from "react"
+import { useRouter } from "next/navigation"
 import { useEncryptedStore } from "@/store/encrypted"
 import { usePasswordStore } from "@/store/password"
 import { Copy } from "lucide-react"
 import { QRCodeSVG } from "qrcode.react"
 
+import { siteConfig } from "@/config/site"
 import { cn } from "@/lib/utils"
 
 const Account = () => {
+  const router = useRouter()
   const [copied, setCopied] = useState(false)
   const [submittedURLs, setSubmittedURLs] = useState(0)
   const [likedURLs, setLikedURLs] = useState(0)
@@ -17,30 +20,37 @@ const Account = () => {
   const [shownAddress, setShownAddress] = useState("No address found")
 
   useEffect(() => {
-    ;(async () => {
-      try {
-        if (address) {
-          const prefix = address.replace(/(.{5})..+/, "$1…")
-          const postfix = address.substring(address.length - 4, address.length)
-          setShownAddress(prefix + postfix)
-        }
-        const { user } = await fetch(
-          `${process.env.NEXT_PUBLIC_API_URL}/user/${userId}`,
-          {
-            method: "GET",
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${token}`,
-            },
+    if (!token || !userId) {
+      router.push(siteConfig.links.signIn)
+    } else {
+      ;(async () => {
+        try {
+          if (address) {
+            const prefix = address.replace(/(.{5})..+/, "$1…")
+            const postfix = address.substring(
+              address.length - 4,
+              address.length
+            )
+            setShownAddress(prefix + postfix)
           }
-        ).then((res) => res.json())
-        setSubmittedURLs(user.submittedUrls.length)
-        setLikedURLs(user.likedUrls.length)
-      } catch (error) {
-        console.log(error)
-      }
-    })()
-  }, [address, userId, token])
+          const { user } = await fetch(
+            `${process.env.NEXT_PUBLIC_API_URL}/user/${userId}`,
+            {
+              method: "GET",
+              headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${token}`,
+              },
+            }
+          ).then((res) => res.json())
+          setSubmittedURLs(user.submittedUrls.length)
+          setLikedURLs(user.likedUrls.length)
+        } catch (error) {
+          console.log(error)
+        }
+      })()
+    }
+  }, [address, userId, token, router])
 
   const copyAddress = () => {
     navigator.clipboard.writeText(address)

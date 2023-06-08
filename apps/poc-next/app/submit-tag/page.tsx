@@ -1,20 +1,29 @@
 "use client"
 
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import Image from "next/image"
+import { useRouter } from "next/navigation"
 import { useEncryptedStore } from "@/store/encrypted"
 import { usePasswordStore } from "@/store/password"
 import { Wallet } from "ethers"
 
+import { siteConfig } from "@/config/site"
 import { getRawTransactionToSign } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 
 import Channel4IconBlack from "../../assets/channel-4-icon-black.svg"
 
 const SubmitTag = () => {
+  const router = useRouter()
   const { encrypted } = useEncryptedStore()
   const { password, token, userId } = usePasswordStore()
   const [name, setName] = useState<string | null>(null)
+
+  useEffect(() => {
+    if (!password || !token || !userId) {
+      router.push(siteConfig.links.signIn)
+    }
+  }, [password, router, token, userId])
 
   const onNameChangeHandler = (e: { target: { value: string } }) => {
     setName(e.target.value)
