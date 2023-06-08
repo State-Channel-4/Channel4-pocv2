@@ -35,7 +35,7 @@ const TagList = ({ tags, title, selectable = false }: TagListProps) => {
   }
 
   const handleDiscover = () => {
-    localStorage.setItem(
+    sessionStorage.setItem(
       "c4.tags",
       JSON.stringify(Array.from(selectedTags.entries()))
     )
@@ -58,9 +58,9 @@ const TagList = ({ tags, title, selectable = false }: TagListProps) => {
             {Array.from(tags).map(([key, tag]) => (
               <button
                 className={cn(
-                  "border-primary/20 text-primary flex cursor-default items-center justify-center gap-2 rounded-full border-2 px-3 py-1 text-sm font-medium transition",
+                  "border-primary/30 text-primary flex cursor-default items-center justify-center gap-2 rounded-full border-2 px-3 py-1 text-sm font-medium transition",
                   selectable &&
-                    "hover:bg-primary/20 focus:bg-primary/30 focus-visible:ring-offset-muted hover:cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-yellow-400 focus-visible:ring-offset-2",
+                    "hover:bg-primary/30 focus:bg-primary/40 focus-visible:ring-offset-muted hover:cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-yellow-400 focus-visible:ring-offset-2",
                   selectable &&
                     selectedTags.size > 0 &&
                     selectedTags.has(tag._id)
