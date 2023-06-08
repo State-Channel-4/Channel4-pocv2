@@ -1,6 +1,7 @@
 "use client"
 
 import { useState } from "react"
+import Image from "next/image"
 import { useRouter } from "next/navigation"
 import { useEncryptedStore } from "@/store/encrypted"
 import { usePasswordStore } from "@/store/password"
@@ -8,6 +9,9 @@ import { Wallet } from "ethers"
 
 import { siteConfig } from "@/config/site"
 import { Button } from "@/components/ui/button"
+
+import BustOfWomanWithFlowers from "../../assets/bust-of-woman-with-flowers.svg"
+import Channel4IconBlack from "../../assets/channel-4-icon-black.svg"
 
 const CreateAccount = () => {
   const router = useRouter()
@@ -64,7 +68,16 @@ const CreateAccount = () => {
   }
 
   return (
-    <div className="mx-7 flex h-full flex-col">
+    <div className="mx-7 flex h-full flex-col lg:container">
+      <div className="bg-c4-gradient-main my-5 flex h-40 justify-evenly rounded-br-3xl rounded-tl-3xl">
+        <Image priority src={Channel4IconBlack} alt="Channel 4 icon black" />
+        <Image
+          priority
+          className="relative top-12 z-10"
+          src={BustOfWomanWithFlowers}
+          alt="Bust of woman with flowers"
+        />
+      </div>
       <h2 className="my-5">This is not your typical creating account steps.</h2>
       <p className="my-5">
         We are creating a secret code just for you, and it will only be saved on
