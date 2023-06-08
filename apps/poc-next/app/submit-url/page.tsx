@@ -1,32 +1,59 @@
 "use client"
 
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import Image from "next/image"
 import { useEncryptedStore } from "@/store/encrypted"
 import { usePasswordStore } from "@/store/password"
+import { Tag, TagMap } from "@/types"
 import { Wallet } from "ethers"
 
 import { getRawTransactionToSign } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
+import TagRow from "@/components/ui/tag-row"
 
 import Channel4IconBlack from "../../assets/channel-4-icon-black.svg"
 
 const SubmitUrl = () => {
   const { encrypted } = useEncryptedStore()
-  const { password, token } = usePasswordStore()
+  const { password, token, userId } = usePasswordStore()
+  const [title, setTitle] = useState<string | null>(null)
   const [url, setUrl] = useState<string | null>(null)
+  const [showTags, setShowTags] = useState<TagMap>(new Map())
+  const [selectedTags, setSelectedTags] = useState<TagMap>(new Map())
+
+  const onTitleChangeHandler = (e: { target: { value: string } }) => {
+    setTitle(e.target.value)
+  }
 
   const onUrlChangeHandler = (e: { target: { value: string } }) => {
     setUrl(e.target.value)
   }
 
+  const getTags = async () => {
+    try {
+      const response = await fetch(
+        process.env.NEXT_PUBLIC_API_URL + "/tag"
+      ).then((res) => res.json())
+      let tags: TagMap = new Map()
+      if ("tags" in response) {
+        response.tags.forEach((tag: Tag) => {
+          tags.set(tag._id, tag)
+        })
+      }
+      setShowTags(tags)
+    } catch (error) {
+      console.log(error)
+      setShowTags(new Map())
+    }
+  }
+
+  useEffect(() => {
+    getTags()
+  }, [])
+
   const onClickShareItHandler = async () => {
     const functionName = "submitURL"
-    const params = [
-      "Google",
-      "https://www.google.com",
-      ["first-tag", "second-tag"],
-    ]
+    const params = [title, url, Array.from(selectedTags.keys())]
     const metaTx = await getRawTransactionToSign(functionName, params)
     const wallet = Wallet.fromEncryptedJsonSync(encrypted!, password!)
     const signedSubmitURLtx = await wallet?.signTransaction(metaTx)
@@ -41,9 +68,14 @@ const SubmitUrl = () => {
         address: wallet.address,
         functionName: functionName,
         params: params,
+        // TODO: temp params for mongodb
+        userId: userId,
       }),
     }).then((res) => res.json())
     console.log(response)
+    setTitle(null)
+    setUrl(null)
+    setSelectedTags(new Map())
   }
 
   return (
@@ -55,7 +87,16 @@ const SubmitUrl = () => {
         Share your favourite websites & <span className="">spark joy</span> in
         our community with <span className="">random gems!</span> 🌐✨
       </h2>
-      <div className="space-y-2 pb-6">
+      <div className="space-y-2 pb-4">
+        <p>Enter title here</p>
+        <input
+          type={"text"}
+          value={title || ""}
+          onChange={onTitleChangeHandler}
+          className="bg-gray h-12 w-full rounded-lg px-2 py-1"
+        />
+      </div>
+      <div className="space-y-2 pb-4">
         <p>Enter URL here</p>
         <input
           type={"text"}
@@ -64,14 +105,13 @@ const SubmitUrl = () => {
           className="bg-gray h-12 w-full rounded-lg px-2 py-1"
         />
       </div>
-      <div className="space-y-2 pb-6">
+      <div className="space-y-2 pb-4">
         <p>Add tags (optional)</p>
-        <input
-          type={"text"}
-          /* TODO: how to save multiple tags? use a select?
-          value={url || ""}
-          onChange={onUrlChangeHandler}*/
-          className="bg-gray h-12 w-full rounded-lg px-2 py-1"
+        <TagRow
+          selectable
+          shownTags={showTags}
+          selectedTags={selectedTags}
+          setSelectedTags={setSelectedTags}
         />
       </div>
       <Button
