@@ -75,7 +75,11 @@
     @apply border-border;
   }
   body {
+<<<<<<< HEAD
     @apply bg-background text-foreground;
+=======
+    @apply bg-background text-foreground text-base font-normal antialiased;
+>>>>>>> origin/main
     font-feature-settings: "rlig" 1, "calt" 1;
   }
   h1{

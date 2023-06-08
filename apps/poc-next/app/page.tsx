@@ -28,7 +28,7 @@ export default async function IndexPage() {
   return (
     <section className="container grid items-center gap-6 pb-8 pt-6">
       <div className="flex max-w-[900px] flex-col items-start gap-2">
-        <h1 className="text-3xl font-extrabold leading-tight tracking-tighter sm:text-3xl md:text-5xl lg:text-6xl">
+        <h1 className="text-3xl font-extrabold leading-tight sm:text-3xl md:text-5xl lg:text-6xl">
           Your journey starts here.
         </h1>
         <p className="text-foreground/70 max-w-[700px] text-lg sm:text-xl">

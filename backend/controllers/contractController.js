@@ -123,6 +123,31 @@ const toggleLike = async (req, res) => {
         existingUser.likedUrls.splice(index, 1)
         // Decrement like count
         await Url.findByIdAndUpdate(url_id, {$inc: {likes: -1}},  { new: true })
+<<<<<<< HEAD
+=======
+// PUT toogle likes like or unlike
+const toggleLike = async (req, res) => {
+  try {
+    const url_id = req.params.id
+    const { address } = req.body
+    const existingUser = await User.findOne({walletAddress: address })
+    if (!existingUser) {
+      return res.status(404).json({ message: 'User not found' })
+    }
+    // Check if the like value already exists in the array
+    if (!existingUser.likedUrls.includes(url_id)) {
+      // Append to the likes array if the value is not already present
+      const url = await Url.findByIdAndUpdate(url_id, {$inc: {likes: 1}},  { new: true })
+      existingUser.likedUrls.push(url)
+    } else {
+      // Unlike the URL if it was previously liked
+      const index = existingUser.likedUrls.indexOf(url_id)
+      if (index > -1) {
+        // Remove from the likes array
+        existingUser.likedUrls.splice(index, 1)
+        // Decrement like count
+        await Url.findByIdAndUpdate(url_id, {$inc: {likes: -1}},  { new: true })
+>>>>>>> origin/main
       }
     }
     await existingUser.save()
@@ -132,6 +157,20 @@ const toggleLike = async (req, res) => {
     return res.status(500).json({ error: 'Server error' })
   }
 }
+<<<<<<< HEAD
+=======
+    }
+    await existingUser.save()
+    return res.json(existingUser)
+  } catch (err) {
+    console.error(err)
+    return res.status(500).json({ error: 'Server error' })
+  }
+}
+
+
+
+>>>>>>> origin/main
 
 
 
@@ -152,6 +191,11 @@ const toggleLike = async (req, res) => {
  */
 // like or unlike url
 const like = async (req, res) => {
+<<<<<<< HEAD
+=======
+// like or unlike url
+const like = async (req, res) => {
+>>>>>>> origin/main
   const {id} = req.params
   console.log("id : ", id)
   console.log("body : ", req.body)
