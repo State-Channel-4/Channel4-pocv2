@@ -1,0 +1,1 @@
+export const firstTag = 'first-tag';

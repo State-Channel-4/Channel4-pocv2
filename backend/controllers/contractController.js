@@ -46,7 +46,7 @@ const login = async(req, res) => {
   try{
     const {signedMessage} = req.body
 
-    const message = "login to backend";
+    const message = process.env.LOGIN_SECRET;
     const signer = ethers.verifyMessage(message, signedMessage);
     const user = await User.findOne({walletAddress: signer })
     if (!user) {
@@ -123,6 +123,28 @@ const toggleLike = async (req, res) => {
         existingUser.likedUrls.splice(index, 1)
         // Decrement like count
         await Url.findByIdAndUpdate(url_id, {$inc: {likes: -1}},  { new: true })
+// PUT toogle likes like or unlike
+const toggleLike = async (req, res) => {
+  try {
+    const url_id = req.params.id
+    const { address } = req.body
+    const existingUser = await User.findOne({walletAddress: address })
+    if (!existingUser) {
+      return res.status(404).json({ message: 'User not found' })
+    }
+    // Check if the like value already exists in the array
+    if (!existingUser.likedUrls.includes(url_id)) {
+      // Append to the likes array if the value is not already present
+      const url = await Url.findByIdAndUpdate(url_id, {$inc: {likes: 1}},  { new: true })
+      existingUser.likedUrls.push(url)
+    } else {
+      // Unlike the URL if it was previously liked
+      const index = existingUser.likedUrls.indexOf(url_id)
+      if (index > -1) {
+        // Remove from the likes array
+        existingUser.likedUrls.splice(index, 1)
+        // Decrement like count
+        await Url.findByIdAndUpdate(url_id, {$inc: {likes: -1}},  { new: true })
       }
     }
     await existingUser.save()
@@ -132,6 +154,17 @@ const toggleLike = async (req, res) => {
     return res.status(500).json({ error: 'Server error' })
   }
 }
+    }
+    await existingUser.save()
+    return res.json(existingUser)
+  } catch (err) {
+    console.error(err)
+    return res.status(500).json({ error: 'Server error' })
+  }
+}
+
+
+
 
 
 
@@ -150,6 +183,8 @@ const toggleLike = async (req, res) => {
  "address": "0x72....."
  }
  */
+// like or unlike url
+const like = async (req, res) => {
 // like or unlike url
 const like = async (req, res) => {
   const {id} = req.params
@@ -233,11 +268,20 @@ const get_all_tags = async(req, res) => {
   }
 }
 
+// Helper function to url URLs based on tags
+const fetchUrlsByTags  = async (tags) => {
+  // Find URLs that have tags that match the extracted tag IDs
+  // Populate the 'tags' field of the URLs with the tag names
+  return await Url.find({ tags: { $in: tags } }, {}).populate('tags', 'name');
+}
+
+// return urls by tags. No shuffling
 const getUrlsByTags = async(req, res) => {
   try {
-    const {tags} = req.body
+    const { tags } = req.query;
+    console.log("tags : ", tags)
     // Find URLs that have tags that match the extracted tag IDs
-    const urls = await Url.find({ tags: { $in: tags } }, { _id: 1, url: 1 });
+    const urls = await fetchUrlsByTags(tags)
     return res.status(200).json({urls: urls})
   } catch(error) {
     console.log(error)
@@ -245,6 +289,57 @@ const getUrlsByTags = async(req, res) => {
   }
 }
 
+// Helper function to shuffle an array
+// Fisher-Yates algorithm O(n)
+const shuffleArray = (array) => {
+  const shuffledArray = [...array];
+  for (let i = shuffledArray.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [shuffledArray[i], shuffledArray[j]] = [shuffledArray[j], shuffledArray[i]];
+  }
+  return shuffledArray;
+};
+
+// mix feed
+const mix = async (req, res) => {
+  try {
+    const { tags } = req.query;
+    console.log("tags : ", tags)
+    // Fetch the URLs based on the provided tags
+    const urls = await fetchUrlsByTags(tags);
+
+    // Randomize the order of the URLs
+    const randomizedUrls = shuffleArray(urls);
+    return res.status(200).json({ urls: randomizedUrls });
+  } catch (error) {
+    return res.status(500).json({ error: error.message });
+  }
+};
+
+
+const syncDataToSmartContract = async () => {
+  const contract = create_contract();
+  const wallet = new ethers.Wallet(process.env.PRIVATE_KEY, contract.provider);
+  const contractWithSigner = contract.connect(wallet);
+
+  // Sync users
+  const users = await User.find();
+  for (const user of users) {
+      await contractWithSigner.addUser(user.walletAddress);
+  }
+
+  // Sync URLs
+  const urls = await Url.find().populate('submittedBy');
+  for (const url of urls) {
+      await contractWithSigner.addUrl(url.title, url.url, url.submittedBy.walletAddress, url.id);
+  }
+
+  // Sync tags
+  const allTags = await Tag.find().populate('createdBy');
+  for (const tag of allTags) {
+      await contractWithSigner.addTag(tag.name, tag.createdBy.walletAddress);
+  }
+}
 
 module.exports = {
   create_user,
@@ -257,5 +352,7 @@ module.exports = {
   create_tag,
   delete_url,
   getUrlsByTags,
-  get_all_tags
+  get_all_tags,
+  mix,
+  syncDataToSmartContract
 }
