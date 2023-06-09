@@ -7,180 +7,124 @@ import { useEncryptedStore } from "@/store/encrypted"
 import { usePasswordStore } from "@/store/password"
 import { Wallet } from "ethers"
 
+import { siteConfig } from "@/config/site"
 import { Button } from "@/components/ui/button"
 
 import BustOfWomanWithFlowers from "../../assets/bust-of-woman-with-flowers.svg"
 import Channel4IconBlack from "../../assets/channel-4-icon-black.svg"
 
-const SignUp = () => {
+const CreateAccount = () => {
   const router = useRouter()
-  const { encrypted, updateEncrypted } = useEncryptedStore()
+  const [isKeyDownloaded, setIsKeyDownloaded] = useState(false)
+  const [isWalletCreated, setIsWalletCreated] = useState(false)
   const { password, updateUserId, updateToken, updatePassword } =
     usePasswordStore()
   const [error, setError] = useState<string | null>(null)
-  const [hasAKey, setHasAKey] = useState(false)
-  const [key, setKey] = useState<string | null>(null)
-  const [encryptedExists, setEncryptedExists] = useState(false)
+  const { encrypted, createEncrypted } = useEncryptedStore()
+
+  const clickDownloadKeyHandler = async () => {
+    try {
+      const element = document.createElement("a")
+      const file = new Blob([encrypted!], { type: "text/plain" })
+      element.href = URL.createObjectURL(file)
+      element.download = "wallet.json"
+      document.body.appendChild(element)
+      element.click()
+      setIsKeyDownloaded(true)
+    } catch (error: any) {
+      setError(error.message)
+    }
+  }
+
+  const clickAllDoneHandler = () => {
+    router.push(siteConfig.links.home)
+  }
 
   const onPasswordChangeHandler = (e: { target: { value: string } }) => {
     updatePassword(e.target.value)
   }
 
-  const clickLetMeInHandler = async () => {
-    try {
-      const wallet = Wallet.fromEncryptedJsonSync(encrypted!, password!)
-      const signedMessage = await wallet.signMessage(
-        process.env.NEXT_PUBLIC_API_LOGIN_SECRET!
-      )
+  const clickCreateAccountHandler = async () => {
+    const encryptedWallet = await createEncrypted(password!)
+    if (encryptedWallet) {
+      setIsWalletCreated(true)
+      const wallet = Wallet.fromEncryptedJsonSync(encryptedWallet!, password!)
       const { user, token } = await fetch(
-        process.env.NEXT_PUBLIC_API_URL + "/login",
+        process.env.NEXT_PUBLIC_API_URL + "/user",
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ signedMessage }),
+          body: JSON.stringify({ address: wallet.address }),
         }
       ).then((response) => response.json())
 
       updateUserId(user._id)
       updateToken(token)
-      router.push("/me")
-    } catch (error: any) {
-      setError(error.message)
-      setTimeout(() => {
-        setError(null)
-      }, 5000)
-    }
-  }
-
-  const clickDeleteHandler = () => {
-    updateEncrypted(null)
-    updatePassword(null)
-    setHasAKey(false)
-    setKey(null)
-    setEncryptedExists(false)
-  }
-
-  const clickStartJourneyHandler = () => {
-    if (encrypted) {
-      setEncryptedExists(true)
     } else {
-      router.push("/create-account")
+      setError(
+        "There is already a wallet created internally. Please delete local storage and try again."
+      )
     }
-  }
-
-  const onLoadKeyChangeHandler = (e: { target: { value: string } }) => {
-    setKey(e.target.value)
-  }
-
-  const clickLoadKeyHandler = () => {
-    updateEncrypted(key)
-    updatePassword(null)
-    setEncryptedExists(true)
-  }
-
-  const clickCancelKeyHandler = () => {
-    setHasAKey(false)
-    setKey(null)
-  }
-
-  const clickAlreadyHaveKeyHandler = () => {
-    setHasAKey(true)
   }
 
   return (
-    <div className="mx-7 flex flex-col justify-center lg:container">
+    <div className="mx-7 flex h-full flex-col lg:container">
       <div className="bg-c4-gradient-main my-5 flex h-40 justify-evenly rounded-br-3xl rounded-tl-3xl">
+        <Image priority src={Channel4IconBlack} alt="Channel 4 icon black" />
         <Image
           priority
           className="relative top-12 z-10"
           src={BustOfWomanWithFlowers}
           alt="Bust of woman with flowers"
         />
-        <Image priority src={Channel4IconBlack} alt="Channel 4 icon black" />
       </div>
-      <h2 className="my-5">
-        transverse <span className="">random content</span> from all over the
-        internet.
-      </h2>
+      <h2 className="my-5">This is not your typical creating account steps.</h2>
       <p className="my-5">
-        Unlock a world of surprises and laughter with Channel 4! Explore random
-        content, and submit the creative gems with our community. 🎉✨
+        We are creating a secret code just for you, and it will only be saved on
+        your browser, not on our server or anywhere else. You will use this code
+        to access your account and do things like submit website links for
+        others to find and earn rewards later on.
       </p>
-      {encryptedExists ? (
+      {isWalletCreated ? (
+        <div>
+          <Button
+            variant="outline"
+            onClick={clickDownloadKeyHandler}
+            className="rounded-full border-green-500 py-6 text-green-500"
+          >
+            Download my private key
+          </Button>
+          <Button
+            variant="outline"
+            disabled={!isKeyDownloaded}
+            onClick={clickAllDoneHandler}
+            className="mt-4 rounded-full border-green-500 py-6 text-green-500 hover:border-green-500"
+          >
+            All done
+          </Button>
+        </div>
+      ) : (
         <div className="flex flex-col items-start space-y-5">
           {error && <p className="text-red-500">{error}</p>}
           <div className="flex w-full items-center space-x-5">
             <p>Password:</p>
             <input
               type={"password"}
-              value={password || ""}
               onChange={onPasswordChangeHandler}
               className="bg-gray w-full rounded-sm px-2 py-1"
             />
           </div>
           <Button
             variant="outline"
-            onClick={clickLetMeInHandler}
+            onClick={clickCreateAccountHandler}
             className="w-full rounded-full border-green-500 py-6 text-green-500"
           >
-            Let me in
+            Create account
           </Button>
-          <Button
-            variant="outline"
-            onClick={clickDeleteHandler}
-            className="w-full rounded-full border-transparent py-6 text-green-500"
-          >
-            Delete local key
-          </Button>
-        </div>
-      ) : (
-        <div className="flex flex-col justify-center">
-          <Button
-            variant="outline"
-            onClick={clickStartJourneyHandler}
-            className="rounded-full border-green-500 py-6 text-green-500"
-          >
-            Start your journey
-          </Button>
-          {hasAKey ? (
-            <div className="my-5 mb-24 flex flex-col items-center space-y-5">
-              <p>Your key:</p>
-              <input
-                type={"text"}
-                value={key || ""}
-                onChange={onLoadKeyChangeHandler}
-                className="bg-gray h-40 w-full rounded-sm px-2"
-              />
-              <Button
-                variant="outline"
-                onClick={clickLoadKeyHandler}
-                className="rounded-full border-green-500 py-6 text-green-500"
-              >
-                Load key
-              </Button>
-              <Button
-                variant="outline"
-                onClick={clickCancelKeyHandler}
-                className="mt-4 rounded-full border-transparent py-6 text-green-500 hover:border-green-500"
-              >
-                Cancel
-              </Button>
-            </div>
-          ) : (
-            <>
-              <Button
-                variant="outline"
-                onClick={clickAlreadyHaveKeyHandler}
-                className="mt-4 rounded-full border-transparent py-6 text-green-500 hover:border-green-500"
-              >
-                Already have the key?
-              </Button>
-            </>
-          )}
         </div>
       )}
     </div>
   )
 }
 
-export default SignUp
+export default CreateAccount

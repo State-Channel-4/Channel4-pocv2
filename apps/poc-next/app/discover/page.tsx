@@ -1,22 +1,19 @@
-"use client";
+"use client"
 
-import { useEffect, useRef, useState } from "react";
-import Link from "next/link";
-import { C4Content, TagMap } from "@/types";
-import { LinkIcon, ThumbsUpIcon } from "lucide-react";
-import useSWR from "swr";
+import { useEffect, useRef, useState } from "react"
+import Link from "next/link"
+import { useEncryptedStore } from "@/store/encrypted"
+import { usePasswordStore } from "@/store/password"
+import { C4Content, TagMap } from "@/types"
+import { LinkIcon, ThumbsUpIcon } from "lucide-react"
+import useSWR from "swr"
 
+import { cn } from "@/lib/utils"
+import { Button, buttonVariants } from "@/components/ui/button"
+import TagList from "@/components/ui/tag-list"
 
-
-import { cn } from "@/lib/utils";
-import { Button, buttonVariants } from "@/components/ui/button";
-import TagList from "@/components/ui/tag-list";
-
-
-
-import SiteFrame from "./SiteFrame";
-import { feedbackMessages, getMix, updateLikesInApi } from "./utils";
-
+import SiteFrame from "./SiteFrame"
+import { feedbackMessages, getMix, updateLikesInApi } from "./utils"
 
 // TODO:
 // - [ ] Get links based on tags from API
@@ -29,6 +26,8 @@ import { feedbackMessages, getMix, updateLikesInApi } from "./utils";
 // - [x] Add error handling
 
 const Discover = () => {
+  const { encrypted } = useEncryptedStore()
+  const { password, token, userId } = usePasswordStore()
   const selectedTags = useRef<TagMap>(new Map())
   const [activeContent, setActiveContent] = useState<C4Content | null>(null)
   const [mixIndex, setMixIndex] = useState<number>(0)
@@ -69,7 +68,7 @@ const Discover = () => {
     }
   }
 
-  const likeOrUnlikeActiveContent = (contentId: string) => {
+  const likeOrUnlikeActiveContent = async (contentId: string) => {
     if (!activeContent) return
     if (userLikes.includes(contentId)) {
       // TODO: Update the actual logged in user likes
@@ -81,7 +80,7 @@ const Discover = () => {
       ? activeContent.likes - 1
       : activeContent.likes + 1
 
-    // updateLikesInApi(contentId)
+    await updateLikesInApi(contentId, encrypted!, password!, token!, userId!)
   }
 
   const changeActiveContent = () => {
@@ -140,24 +139,26 @@ const Discover = () => {
             <p className="p-2"></p>
             {/* Like button */}
             <div className="flex items-center gap-2">
-              <button
-                className="bg-primary/20 hover:bg-primary/10 text-primary/70 group inline-flex items-center gap-2 self-start rounded-full px-4 py-2 text-sm transition-all duration-300"
-                onClick={(e) => likeOrUnlikeActiveContent(activeContent._id)}
-              >
-                <ThumbsUpIcon
-                  size={16}
-                  className={cn(
-                    "transition-all duration-300 group-hover:-rotate-12 group-hover:scale-110 group-hover:text-yellow-300",
-                    userLikes.includes(activeContent._id) && "text-yellow-300"
-                  )}
-                  aria-label="Like"
-                />
-                <p className="text-primary">
-                  {userLikes.includes(activeContent._id) ? "Liked" : "Like"}
-                </p>
-                <p>•</p>
-                <p>{activeContent.likes}</p>
-              </button>
+              {password && token && userId && (
+                <button
+                  className="bg-primary/20 hover:bg-primary/10 text-primary/70 group inline-flex items-center gap-2 self-start rounded-full px-4 py-2 text-sm transition-all duration-300"
+                  onClick={(e) => likeOrUnlikeActiveContent(activeContent._id)}
+                >
+                  <ThumbsUpIcon
+                    size={16}
+                    className={cn(
+                      "transition-all duration-300 group-hover:-rotate-12 group-hover:scale-110 group-hover:text-yellow-300",
+                      userLikes.includes(activeContent._id) && "text-yellow-300"
+                    )}
+                    aria-label="Like"
+                  />
+                  <p className="text-primary">
+                    {userLikes.includes(activeContent._id) ? "Liked" : "Like"}
+                  </p>
+                  <p>•</p>
+                  <p>{activeContent.likes}</p>
+                </button>
+              )}
               <Link href={activeContent.url} passHref target="__blank">
                 <Button
                   variant={"link"}

@@ -161,7 +161,7 @@ router.post("/recover_account", cc.recover_account);
  *         description: Server error
  */
 // like or unlike a url
-router.put("/like/:id", authenticate, verifySignedMessage, cc.like);
+router.put("/like/:id", authenticate, verifySignedFunctionMessage, cc.like);
 
 /**
  * @swagger
@@ -321,7 +321,7 @@ router.delete("/url", authenticate, verifySignedMessage, cc.delete_url);
  *         description: Server error
  */
 // creating tags
-router.post("/tag", authenticate, verifySignedMessage, cc.create_tag);
+router.post("/tag", authenticate, verifySignedFunctionMessage, cc.create_tag);
 
 /**
  * @swagger

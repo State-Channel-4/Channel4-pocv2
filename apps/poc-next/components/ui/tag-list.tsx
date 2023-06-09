@@ -1,18 +1,14 @@
-"use client";
+"use client"
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
-import { Tag, TagMap } from "@/types";
-import { CheckCircle2, PlusCircle } from "lucide-react";
+import { useState } from "react"
+import { useRouter } from "next/navigation"
+import { Tag, TagMap } from "@/types"
+import { CheckCircle2, PlusCircle } from "lucide-react"
 
+import { siteConfig } from "@/config/site"
+import { cn } from "@/lib/utils"
 
-
-import { cn } from "@/lib/utils";
-
-
-
-import { buttonVariants } from "./button";
-
+import { buttonVariants } from "./button"
 
 interface TagListProps {
   tags: TagMap
@@ -39,7 +35,7 @@ const TagList = ({ tags, title, selectable = false }: TagListProps) => {
       "c4.tags",
       JSON.stringify(Array.from(selectedTags.entries()))
     )
-    router.push("/discover")
+    router.push(siteConfig.links.discover)
   }
 
   return (
