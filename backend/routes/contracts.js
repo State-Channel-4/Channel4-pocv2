@@ -161,7 +161,7 @@ router.post("/recover_account", cc.recover_account);
  *         description: Server error
  */
 // like or unlike a url
-router.put("/like/:id", authenticate, verifySignedMessage, cc.like);
+router.put("/like/:id", authenticate, verifySignedFunctionMessage, cc.like);
 
 /**
  * @swagger

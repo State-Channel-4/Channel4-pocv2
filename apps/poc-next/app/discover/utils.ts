@@ -1,5 +1,8 @@
 import { C4Content, TagMap } from "@/types"
+import { Wallet } from "ethers"
 import { Fetcher } from "swr"
+
+import { getRawTransactionToSign } from "@/lib/utils"
 
 export const getMix: Fetcher<{ urls: C4Content[] }, TagMap> = (tags) => {
   const tagQueries = new URLSearchParams()
@@ -9,13 +12,32 @@ export const getMix: Fetcher<{ urls: C4Content[] }, TagMap> = (tags) => {
   ).then((response) => response.json())
 }
 
-export const updateLikesInApi = (contentId: string) => {
-  fetch(`${process.env.NEXT_PUBLIC_API_URL}/likes/${contentId}`, {
-    method: "POST",
+export const updateLikesInApi = async (
+  contentId: string,
+  encrypted: string,
+  password: string,
+  token: string,
+  userId: string
+) => {
+  const functionName = "likeURL"
+  const params = [2] // TODO: use a url id compatible with Solidity (object_id cannot be casted to bigint. I think it is too large)
+  const metaTx = await getRawTransactionToSign(functionName, params)
+  const wallet = Wallet.fromEncryptedJsonSync(encrypted!, password!)
+  const signedLikeUrlTx = await wallet?.signTransaction(metaTx)
+  fetch(`${process.env.NEXT_PUBLIC_API_URL}/like/${contentId}`, {
+    method: "PUT",
     headers: {
       "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
     },
-    body: JSON.stringify({}),
+    body: JSON.stringify({
+      signedMessage: signedLikeUrlTx,
+      address: wallet.address,
+      functionName: functionName,
+      params: params,
+      // TODO: temp params for mongodb
+      userId: userId,
+    }),
   }).then((response) => {
     return response.json()
   })
