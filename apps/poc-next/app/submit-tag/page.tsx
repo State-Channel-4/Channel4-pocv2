@@ -18,6 +18,7 @@ const SubmitTag = () => {
   const { encrypted } = useEncryptedStore()
   const { password, token, userId } = usePasswordStore()
   const [name, setName] = useState<string | null>(null)
+  const [isLoading, setIsLoading] = useState(false)
 
   useEffect(() => {
     if (!password || !token || !userId) {
@@ -30,6 +31,7 @@ const SubmitTag = () => {
   }
 
   const onClickCreateHandler = async () => {
+    setIsLoading(true)
     const functionName = "createTagIfNotExists"
     const params = [name]
     const metaTx = await getRawTransactionToSign(functionName, params)
@@ -52,6 +54,7 @@ const SubmitTag = () => {
     }).then((res) => res.json())
     console.log(response)
     setName(null)
+    setIsLoading(false)
   }
 
   return (
@@ -74,6 +77,7 @@ const SubmitTag = () => {
       </div>
       <Button
         variant="outline"
+        disabled={isLoading}
         onClick={onClickCreateHandler}
         className="rounded-full border-green-500 py-6 text-green-500"
       >

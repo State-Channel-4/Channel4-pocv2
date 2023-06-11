@@ -23,6 +23,7 @@ const SubmitUrl = () => {
   const [url, setUrl] = useState<string | null>(null)
   const [showTags, setShowTags] = useState<TagMap>(new Map())
   const [selectedTags, setSelectedTags] = useState<TagMap>(new Map())
+  const [isLoading, setIsLoading] = useState(false)
 
   const onTitleChangeHandler = (e: { target: { value: string } }) => {
     setTitle(e.target.value)
@@ -58,6 +59,7 @@ const SubmitUrl = () => {
   }, [password, router, token, userId])
 
   const onClickShareItHandler = async () => {
+    setIsLoading(true)
     const functionName = "submitURL"
     const params = [title, url, Array.from(selectedTags.keys())]
     const metaTx = await getRawTransactionToSign(functionName, params)
@@ -82,6 +84,7 @@ const SubmitUrl = () => {
     setTitle(null)
     setUrl(null)
     setSelectedTags(new Map())
+    setIsLoading(false)
   }
 
   return (
@@ -122,6 +125,7 @@ const SubmitUrl = () => {
       </div>
       <Button
         variant="outline"
+        disabled={isLoading}
         onClick={onClickShareItHandler}
         className="rounded-full border-green-500 py-6 text-green-500"
       >

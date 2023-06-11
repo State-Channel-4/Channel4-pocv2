@@ -21,8 +21,10 @@ const CreateAccount = () => {
     usePasswordStore()
   const [error, setError] = useState<string | null>(null)
   const { encrypted, createEncrypted } = useEncryptedStore()
+  const [isLoading, setIsLoading] = useState(false)
 
   const clickDownloadKeyHandler = async () => {
+    setIsLoading(true)
     try {
       const element = document.createElement("a")
       const file = new Blob([encrypted!], { type: "text/plain" })
@@ -34,10 +36,13 @@ const CreateAccount = () => {
     } catch (error: any) {
       setError(error.message)
     }
+    setIsLoading(false)
   }
 
   const clickAllDoneHandler = () => {
+    setIsLoading(true)
     router.push(siteConfig.links.home)
+    setIsLoading(false)
   }
 
   const onPasswordChangeHandler = (e: { target: { value: string } }) => {
@@ -45,6 +50,7 @@ const CreateAccount = () => {
   }
 
   const clickCreateAccountHandler = async () => {
+    setIsLoading(true)
     const encryptedWallet = await createEncrypted(password!)
     if (encryptedWallet) {
       setIsWalletCreated(true)
@@ -65,6 +71,7 @@ const CreateAccount = () => {
         "There is already a wallet created internally. Please delete local storage and try again."
       )
     }
+    setIsLoading(false)
   }
 
   return (
@@ -89,6 +96,7 @@ const CreateAccount = () => {
         <div>
           <Button
             variant="outline"
+            disabled={isLoading}
             onClick={clickDownloadKeyHandler}
             className="rounded-full border-green-500 py-6 text-green-500"
           >
@@ -96,7 +104,7 @@ const CreateAccount = () => {
           </Button>
           <Button
             variant="outline"
-            disabled={!isKeyDownloaded}
+            disabled={!isKeyDownloaded && isLoading}
             onClick={clickAllDoneHandler}
             className="mt-4 rounded-full border-green-500 py-6 text-green-500 hover:border-green-500"
           >
@@ -116,6 +124,7 @@ const CreateAccount = () => {
           </div>
           <Button
             variant="outline"
+            disabled={isLoading}
             onClick={clickCreateAccountHandler}
             className="w-full rounded-full border-green-500 py-6 text-green-500"
           >
