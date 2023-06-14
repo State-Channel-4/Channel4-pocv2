@@ -1,4 +1,7 @@
+"use client"
+
 import Link from "next/link"
+import { usePasswordStore } from "@/store/password"
 
 import { siteConfig } from "@/config/site"
 import { buttonVariants } from "@/components/ui/button"
@@ -8,6 +11,7 @@ import { MainNav } from "@/components/main-nav"
 import { SecondaryNav } from "./secondary-nav"
 
 export function SiteHeader() {
+  const { password, token, userId } = usePasswordStore()
   return (
     <header className="bg-background w-full border-b">
       <div className="container flex h-16 items-center space-x-4 sm:justify-between sm:space-x-0">
@@ -45,7 +49,9 @@ export function SiteHeader() {
               </div>
             </Link>
             {/* <ThemeToggle /> */}
-            <SecondaryNav items={siteConfig.secondaryNav} />
+            {!(password && userId && token) && (
+              <SecondaryNav items={siteConfig.secondaryNav} />
+            )}
           </nav>
         </div>
       </div>
