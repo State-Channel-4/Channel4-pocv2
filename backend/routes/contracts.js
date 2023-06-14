@@ -81,7 +81,8 @@ router.post("/user", cc.create_user);
 router.post("/login", cc.login);
 
 // get users
-router.get("/users", authenticate, cc.get_all_users);
+//router.get("/users", authenticate, cc.get_all_users);
+router.get("/users",  cc.get_all_users);
 
 // get specific user
 router.get("/user/:id", authenticate, cc.get_specific_user);
