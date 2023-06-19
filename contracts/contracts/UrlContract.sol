@@ -10,8 +10,7 @@ contract UrlContract {
         string title;
         string url;
         address submittedBy;
-        uint256 upvotes;
-        uint256 downvotes;
+        uint256 likes;
         uint256[] tagIds;
     }
 
@@ -22,8 +21,8 @@ contract UrlContract {
     }
 
     struct User {
-        uint256[] upvotedURLs;
-        uint256[] downvotedURLs;
+        mapping (uint256 => bool) likedURLs;
+        uint256 numberOfLikedURLs;
         uint256[] submittedURLs;
     }
 
@@ -35,7 +34,6 @@ contract UrlContract {
     URL[] private urls;
     Tags private tags;
     mapping (address => User) private users;
-    mapping (uint256 => uint256) public testing;
 
     /// @notice Initialize contract with one tag
     /// @dev Initialize with one tag to prevent the mapping of initial tag (0) to be confused as a empty value
@@ -61,7 +59,7 @@ contract UrlContract {
             addUrlToTag(tagIndexes[i], urlIndex);
         }
         // add new url to array
-        URL memory newURL = URL(title, url, msg.sender, 0, 0, tagIndexes);
+        URL memory newURL = URL(title, url, msg.sender, 0, tagIndexes);
         urls.push(newURL);
     }
 
@@ -119,6 +117,11 @@ contract UrlContract {
         return urls;
     }
 
+    /// @notice Retrieve all registered tags
+    function getAllTags() public view returns (Tag[] memory) {
+        return tags.list;
+    }
+
     /// @notice Retrieve all URLs submitted by a specific user
     /// @param userAddress User id
     function getURLsByUser(address userAddress) public view returns (URL[] memory) {
@@ -144,24 +147,15 @@ contract UrlContract {
         return tags.list[index];
     }
 
-    /// @notice Get all upvoted URLs of a specific user
+    /// @notice Get all liked URLs of a specific user
     /// @param userAddress User id
-    function getUserUpvotedURLs(address userAddress) public view returns (URL[] memory) {
-        uint256[] memory userUpvotedURLs = users[userAddress].upvotedURLs;
-        URL[] memory result = new URL[](userUpvotedURLs.length);
-        for (uint256 i = 0; i < userUpvotedURLs.length; i++) {
-            result[i] = urls[userUpvotedURLs[i]];
-        }
-        return result;
-    }
-
-    /// @notice Get all downvoted URLs of a specific user
-    /// @param userAddress User id
-    function getUserDownvotedURLs(address userAddress) public view returns (URL[] memory) {
-        uint256[] memory userDownvotedURLs = users[userAddress].downvotedURLs;
-        URL[] memory result = new URL[](userDownvotedURLs.length);
-        for (uint256 i = 0; i < userDownvotedURLs.length; i++) {
-            result[i] = urls[userDownvotedURLs[i]];
+    function getUserLikedURLs(address userAddress) public view returns (URL[] memory) {
+        // get the actual likedURLs
+        URL [] memory result = new URL[](users[userAddress].numberOfLikedURLs);
+        for (uint256 i = 0; i < urls.length; i++) {
+            if (users[userAddress].likedURLs[i] == true){
+                result[i] = urls[i];
+            }
         }
         return result;
     }
@@ -175,5 +169,25 @@ contract UrlContract {
             result[i] = urls[userSubmittedURLs[i]];
         }
         return result;
+    }
+
+    /// @notice Like a specific URL
+    /// @param index URL id
+    function likeURL(uint256 index) public {
+        address userAddress = msg.sender;
+        require(users[userAddress].likedURLs[index] == false, "URL already liked");
+        users[userAddress].numberOfLikedURLs = users[userAddress].numberOfLikedURLs + 1;
+        users[userAddress].likedURLs[index] = true;
+        urls[index].likes = urls[index].likes + 1;
+    }
+
+    /// @notice Unlike a specific URL
+    /// @param index URL id
+    function unlikeURL(uint256 index) public {
+        address userAddress = msg.sender;
+        require(users[userAddress].likedURLs[index] == true, "URL already unliked");
+        users[userAddress].numberOfLikedURLs = users[userAddress].numberOfLikedURLs - 1;
+        users[userAddress].likedURLs[index] = false;
+        urls[index].likes = urls[index].likes - 1;
     }
 }

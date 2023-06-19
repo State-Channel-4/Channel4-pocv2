@@ -1,4 +1,3 @@
-const mongoose = require('mongoose')
 const ethers = require('ethers')
 require('dotenv').config()
 
@@ -46,7 +45,7 @@ const login = async(req, res) => {
   try{
     const {signedMessage} = req.body
 
-    const message = "login to backend";
+    const message = process.env.LOGIN_SECRET;
     const signer = ethers.verifyMessage(message, signedMessage);
     const user = await User.findOne({walletAddress: signer })
     if (!user) {
@@ -58,7 +57,6 @@ const login = async(req, res) => {
     return res.status(200).json({user: user, token: token})
   } catch(error) {
     return res.status(500).json({error : error.message})
-
   }
 }
 
@@ -134,9 +132,6 @@ const toggleLike = async (req, res) => {
 }
 
 
-
-
-
 // vote
 /**
  *
@@ -175,7 +170,11 @@ const like = async (req, res) => {
  */
 const submit_url = async(req, res) => {
   try {
-    const { title, url, submittedBy, tags } = req.body; // Get the title, URL, and submitter from the request body
+    const title = req.body.params[0];
+    const url = req.body.params[1];
+    const tags = req.body.params[2];
+    const submittedBy = req.body.userId;
+
     const existingUrl = await Url.findOne({ url }); // Check if the URL already exists in the database
     if (existingUrl) {
       return res.status(400).json({ error: 'URL already exists' });
@@ -213,7 +212,8 @@ const delete_url = async(req, res) => {
 const create_tag = async(req, res) => {
   try {
     // name createdby
-    const {name, createdBy} = req.body
+    const name = req.body.params[0];
+    const createdBy = req.body.userId;
     const tag = await Tag.create({name: name, createdBy: createdBy})
     res.status(200).json({tag: tag})
   } catch (error) {
@@ -233,11 +233,20 @@ const get_all_tags = async(req, res) => {
   }
 }
 
+// Helper function to url URLs based on tags
+const fetchUrlsByTags  = async (tags) => {
+  // Find URLs that have tags that match the extracted tag IDs
+  // Populate the 'tags' field of the URLs with the tag names
+  return await Url.find({ tags: { $in: tags } }, {}).populate('tags', 'name');
+}
+
+// return urls by tags. No shuffling
 const getUrlsByTags = async(req, res) => {
   try {
-    const {tags} = req.body
+    const { tags } = req.query;
+    console.log("tags : ", tags)
     // Find URLs that have tags that match the extracted tag IDs
-    const urls = await Url.find({ tags: { $in: tags } }, { _id: 1, url: 1 });
+    const urls = await fetchUrlsByTags(tags)
     return res.status(200).json({urls: urls})
   } catch(error) {
     console.log(error)
@@ -245,6 +254,57 @@ const getUrlsByTags = async(req, res) => {
   }
 }
 
+// Helper function to shuffle an array
+// Fisher-Yates algorithm O(n)
+const shuffleArray = (array) => {
+  const shuffledArray = [...array];
+  for (let i = shuffledArray.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [shuffledArray[i], shuffledArray[j]] = [shuffledArray[j], shuffledArray[i]];
+  }
+  return shuffledArray;
+};
+
+// mix feed
+const mix = async (req, res) => {
+  try {
+    const { tags } = req.query;
+    console.log("tags : ", tags)
+    // Fetch the URLs based on the provided tags
+    const urls = await fetchUrlsByTags(tags);
+
+    // Randomize the order of the URLs
+    const randomizedUrls = shuffleArray(urls);
+    return res.status(200).json({ urls: randomizedUrls });
+  } catch (error) {
+    return res.status(500).json({ error: error.message });
+  }
+};
+
+
+const syncDataToSmartContract = async () => {
+  const contract = create_contract();
+  const wallet = new ethers.Wallet(process.env.PRIVATE_KEY, contract.provider);
+  const contractWithSigner = contract.connect(wallet);
+
+  // Sync users
+  const users = await User.find();
+  for (const user of users) {
+      await contractWithSigner.addUser(user.walletAddress);
+  }
+
+  // Sync URLs
+  const urls = await Url.find().populate('submittedBy');
+  for (const url of urls) {
+      await contractWithSigner.addUrl(url.title, url.url, url.submittedBy.walletAddress, url.id);
+  }
+
+  // Sync tags
+  const allTags = await Tag.find().populate('createdBy');
+  for (const tag of allTags) {
+      await contractWithSigner.addTag(tag.name, tag.createdBy.walletAddress);
+  }
+}
 
 module.exports = {
   create_user,
@@ -257,5 +317,7 @@ module.exports = {
   create_tag,
   delete_url,
   getUrlsByTags,
-  get_all_tags
+  get_all_tags,
+  mix,
+  syncDataToSmartContract
 }
