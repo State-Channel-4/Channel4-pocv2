@@ -29,16 +29,23 @@ const create_user = async(req, res) => {
 }
 
 // get all users
-const get_all_users = async(req, res) => {
-  console.log("getting all users")
+const get_all_users = async (req, res) => {
   try {
-    const users = await User.find()
-    res.status(200).json({users: users})
-  } catch(error) {
-    res.status(400).json({error: error.message})
-  }
+    const page = parseInt(req.query.page) || 1; // Get the page number from query parameters, default to 1 if not provided
+    const limit = parseInt(req.query.limit) || 10; // Get the limit from query parameters, default to 10 if not provided
 
-}
+    const users = await User.find()
+      .skip((page - 1) * limit) // Skip the appropriate number of documents based on the page and limit
+      .limit(limit); // Limit the number of documents returned per page
+
+    res.status(200).json({
+      users: users
+    });
+  } catch (error) {
+    res.status(500).json({ error: 'Error retrieving users' });
+  }
+};
+
 
 // login
 const login = async(req, res) => {
@@ -234,25 +241,38 @@ const get_all_tags = async(req, res) => {
 }
 
 // Helper function to url URLs based on tags
-const fetchUrlsByTags  = async (tags) => {
+const fetchUrlsByTags  = async (tags, page = 1, limit = 100) => {
   // Find URLs that have tags that match the extracted tag IDs
   // Populate the 'tags' field of the URLs with the tag names
-  return await Url.find({ tags: { $in: tags } }, {}).populate('tags', 'name');
+  try {
+    const skipCount = (page - 1) * limit;
+    return await Url.find({ tags: { $in: tags } }, {})
+    .skip(skipCount)
+    .limit(limit)
+    .populate('tags', 'name');
+  } catch (error) {
+    return { "error": error }
+  }
 }
 
 // return urls by tags. No shuffling
-const getUrlsByTags = async(req, res) => {
+const getUrlsByTags = async (req, res) => {
   try {
-    const { tags } = req.query;
-    console.log("tags : ", tags)
-    // Find URLs that have tags that match the extracted tag IDs
-    const urls = await fetchUrlsByTags(tags)
-    return res.status(200).json({urls: urls})
-  } catch(error) {
-    console.log(error)
-    return res.status(500).json({error: error.message})
+    const tags = req.query.tags || ''; // Get the tags from query parameters
+    const page = parseInt(req.query.page) || 1; // Get the page number from query parameters, default to 1 if not provided
+    const limit = parseInt(req.query.limit) || 10; // Get the limit from query parameters, default to 10 if not provided
+
+    const urls = await Url.find({ tags: { $in: tags } })
+      .skip((page - 1) * limit) // Skip the appropriate number of documents based on the page and limit
+      .limit(limit); // Limit the number of documents returned per page
+
+    res.status(200).json({
+      urls: urls
+    });
+  } catch (error) {
+    res.status(500).json({ error: 'Error retrieving URLs by tags' });
   }
-}
+};
 
 // Helper function to shuffle an array
 // Fisher-Yates algorithm O(n)
@@ -268,10 +288,10 @@ const shuffleArray = (array) => {
 // mix feed
 const mix = async (req, res) => {
   try {
-    const { tags } = req.query;
-    console.log("tags : ", tags)
+    const { tags, page = 1, limit = 10 } = req.query;
+    console.log("tags : page : limit ", tags, page, limit)
     // Fetch the URLs based on the provided tags
-    const urls = await fetchUrlsByTags(tags);
+    const urls = await fetchUrlsByTags(tags, page, limit);
 
     // Randomize the order of the URLs
     const randomizedUrls = shuffleArray(urls);
