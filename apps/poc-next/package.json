@@ -2,7 +2,7 @@
   "name": "next-template",
   "version": "0.0.2",
   "private": true,
-  "packageManager": "pnpm@7.x.x",
+  "packageManager": "pnpm@7.28.0",
   "engines": {
     "node": ">=16.8",
     "pnpm": ">=7.28.0",

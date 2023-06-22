@@ -27,7 +27,7 @@ export function BottomNavigation({ iconColor = "#D0D1D2" }: Props) {
 
   // check remix icons names in https://react-icons.github.io/react-icons/icons?name=ri
   return (
-    <div className="bg-dark fixed bottom-0 left-0 w-screen">
+    <div className="fixed bottom-0 left-0 w-screen">
       {isMenuOpen ? (
         <nav className="bg-c4-gradient-green flex flex-col gap-6 rounded-t-3xl px-3 py-8 font-semibold text-black">
           <Link href={siteConfig.links.signUp} onClick={handleURLClick}>
@@ -44,38 +44,40 @@ export function BottomNavigation({ iconColor = "#D0D1D2" }: Props) {
           </Link>
         </nav>
       ) : null}
-      <nav className="flex w-screen justify-between px-3 py-5 lg:container lg:px-0">
-        <Link
-          href={siteConfig.links.discover}
-          className="bg-gray flex w-60 cursor-pointer items-center justify-center rounded-lg p-2 drop-shadow-md"
-        >
-          <Image priority src={Channel4Icon} alt="Channel 4 Icon" />
-          <h1 className="font-title ml-3 text-base font-semibold tracking-wide text-white">
-            Discover
-          </h1>
-        </Link>
-
-        <div className="flex justify-end gap-6">
+      <div className="bg-dark">
+        <nav className="flex w-screen justify-between px-3 py-5 lg:container lg:px-0">
           <Link
-            href={siteConfig.links.home}
-            className="flex cursor-pointer items-center bg-transparent"
+            href={siteConfig.links.discover}
+            className="bg-gray flex w-60 cursor-pointer items-center justify-center rounded-lg p-2 drop-shadow-md"
           >
-            <RiHeartFill size="25px" fill={iconColor} />
+            <Image priority src={Channel4Icon} alt="Channel 4 Icon" />
+            <h1 className="font-title ml-3 text-base font-semibold tracking-wide text-white">
+              Discover
+            </h1>
           </Link>
 
-          <Button
-            onClick={handleMenuClick}
-            variant={"ghost"}
-            className="flex cursor-pointer items-center bg-transparent"
-          >
-            {isMenuOpen ? (
-              <RiCloseLine size="25px" fill={iconColor} />
-            ) : (
-              <RiMenu2Line size="25px" fill={iconColor} />
-            )}
-          </Button>
-        </div>
-      </nav>
+          <div className="flex justify-end gap-6">
+            <Link
+              href={siteConfig.links.home}
+              className="flex cursor-pointer items-center bg-transparent"
+            >
+              <RiHeartFill size="25px" fill={iconColor} />
+            </Link>
+
+            <Button
+              onClick={handleMenuClick}
+              variant={"ghost"}
+              className="flex cursor-pointer items-center bg-transparent"
+            >
+              {isMenuOpen ? (
+                <RiCloseLine size="25px" fill={iconColor} />
+              ) : (
+                <RiMenu2Line size="25px" fill={iconColor} />
+              )}
+            </Button>
+          </div>
+        </nav>
+      </div>
     </div>
   )
 }

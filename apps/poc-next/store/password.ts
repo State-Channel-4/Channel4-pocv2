@@ -1,4 +1,5 @@
 import { create } from "zustand"
+import { createJSONStorage, persist } from "zustand/middleware"
 
 type Store = {
   userId: string | null
@@ -9,11 +10,19 @@ type Store = {
   updatePassword: (data: string | null) => void
 }
 
-export const usePasswordStore = create<Store>((set) => ({
-  userId: null,
-  token: null,
-  password: null,
-  updateUserId: (data) => set({ userId: data }),
-  updateToken: (data) => set({ token: data }),
-  updatePassword: (data) => set({ password: data }),
-}))
+export const usePasswordStore = create<Store>()(
+  persist(
+    (set) => ({
+      userId: null,
+      token: null,
+      password: null,
+      updateUserId: (data) => set({ userId: data }),
+      updateToken: (data) => set({ token: data }),
+      updatePassword: (data) => set({ password: data }),
+    }),
+    {
+      name: "channel-4-password",
+      storage: createJSONStorage(() => sessionStorage),
+    }
+  )
+)

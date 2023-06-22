@@ -15,7 +15,11 @@ export const siteConfig = {
     },
     {
       title: "Add tag",
-      href: "/tags/new",
+      href: "/submit-tag",
+    },
+    {
+      title: "Me",
+      href: "/me",
     },
   ],
   secondaryNav: [
@@ -33,6 +37,8 @@ export const siteConfig = {
     github: "https://github.com/State-Channel-4/Channel4-pocv2",
     docs: "https://github.com/State-Channel-4/Channel4-pocv2",
     home: "/",
+    me: "/me",
+    signIn: "/sign-in",
     signUp: "/sign-up",
     account: "/account",
     discover: "/discover",
