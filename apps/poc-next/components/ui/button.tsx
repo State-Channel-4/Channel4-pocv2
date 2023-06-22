@@ -62,18 +62,18 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
           >
             <defs>
               <linearGradient id="spinner-secondHalf">
-                <stop offset="0%" stop-opacity="0" stop-color="currentColor" />
+                <stop offset="0%" stopOpacity="0" stop-color="currentColor" />
                 <stop
                   offset="100%"
-                  stop-opacity="0.5"
+                  stopOpacity="0.5"
                   stop-color="currentColor"
                 />
               </linearGradient>
               <linearGradient id="spinner-firstHalf">
-                <stop offset="0%" stop-opacity="1" stop-color="currentColor" />
+                <stop offset="0%" stopOpacity="1" stop-color="currentColor" />
                 <stop
                   offset="100%"
-                  stop-opacity="0.5"
+                  stopOpacity="0.5"
                   stop-color="currentColor"
                 />
               </linearGradient>
@@ -111,4 +111,3 @@ Button.displayName = "Button"
 
 export { Button, buttonVariants }
 
-export { Button, buttonVariants }

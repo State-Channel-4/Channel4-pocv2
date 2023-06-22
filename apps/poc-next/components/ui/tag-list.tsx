@@ -103,4 +103,3 @@ const TagList = ({ tags, title, selectable = false }: TagListProps) => {
 
 export default TagList
 
-export default TagList
