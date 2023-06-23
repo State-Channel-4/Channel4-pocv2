@@ -127,6 +127,7 @@ const SignUp = () => {
           </div>
           <Button
             variant="outline"
+            loading={isLoading}
             disabled={isLoading}
             onClick={clickCreateAccountHandler}
             className="w-full rounded-full border-green-500 py-6 text-green-500"

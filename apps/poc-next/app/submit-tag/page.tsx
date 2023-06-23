@@ -70,6 +70,7 @@ const SubmitTag = () => {
         </div>
         <Button
           variant="outline"
+          loading={isLoading}
           disabled={isLoading}
           onClick={onClickCreateHandler}
           className="rounded-full border-green-500 py-6 text-green-500"

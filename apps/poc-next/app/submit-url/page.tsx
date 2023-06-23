@@ -2,13 +2,11 @@
 
 import { useEffect, useState } from "react"
 import Image from "next/image"
-import { useRouter } from "next/navigation"
 import { useEncryptedStore } from "@/store/encrypted"
 import { usePasswordStore } from "@/store/password"
 import { Tag, TagMap } from "@/types"
 import { Wallet } from "ethers"
 
-import { siteConfig } from "@/config/site"
 import { getRawTransactionToSign } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import TagRow from "@/components/ui/tag-row"
@@ -123,6 +121,7 @@ const SubmitUrl = () => {
         </div>
         <Button
           variant="outline"
+          loading={isLoading}
           disabled={isLoading}
           onClick={onClickShareItHandler}
           className="rounded-full border-green-500 py-6 text-green-500"
