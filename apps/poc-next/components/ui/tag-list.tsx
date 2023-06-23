@@ -31,10 +31,11 @@ const TagList = ({ tags, title, selectable = false }: TagListProps) => {
   }
 
   const handleDiscover = () => {
-    sessionStorage.setItem(
+    if(selectedTags.size > 0){
+      sessionStorage.setItem(
       "c4.tags",
       JSON.stringify(Array.from(selectedTags.entries()))
-    )
+    )}
     router.push(siteConfig.links.discover)
   }
 
@@ -90,7 +91,6 @@ const TagList = ({ tags, title, selectable = false }: TagListProps) => {
               buttonVariants({ size: "lg" }),
               "bg-c4-gradient-main font-bold transition hover:scale-105"
             )}
-            disabled={selectedTags.size === 0}
             onClick={() => handleDiscover()}
           >
             Start your journey ✨
