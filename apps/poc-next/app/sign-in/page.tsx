@@ -48,7 +48,13 @@ const SignIn = () => {
       updateToken(token)
       router.push(siteConfig.links.me)
     } catch (error: any) {
-      setError(error.message)
+      console.log(error.message)
+      if (error.message.includes("incorrect password")) {
+        setError("Incorrect password. Please try again.")
+      } else {
+        console.log(error.message)
+        setError("Something went wrong. Check the console for more details.")
+      }
       setTimeout(() => {
         setError(null)
       }, 5000)
