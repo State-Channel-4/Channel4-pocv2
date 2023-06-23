@@ -31,11 +31,12 @@ const TagList = ({ tags, title, selectable = false }: TagListProps) => {
   }
 
   const handleDiscover = () => {
-    if(selectedTags.size > 0){
+    if (selectedTags.size > 0) {
       sessionStorage.setItem(
-      "c4.tags",
-      JSON.stringify(Array.from(selectedTags.entries()))
-    )}
+        "c4.tags",
+        JSON.stringify(Array.from(selectedTags.entries()))
+      )
+    }
     router.push(siteConfig.links.discover)
   }
 
@@ -102,4 +103,3 @@ const TagList = ({ tags, title, selectable = false }: TagListProps) => {
 }
 
 export default TagList
-
