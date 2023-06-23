@@ -14,8 +14,8 @@ dependencies:
     specifier: ^6.4.0
     version: 6.4.0
   lucide-react:
-    specifier: 0.105.0-alpha.4
-    version: 0.105.0-alpha.4(react@18.2.0)
+    specifier: 0.252.0
+    version: 0.252.0(react@18.2.0)
   next:
     specifier: ^13.4.1
     version: 13.4.1(@babel/core@7.21.8)(react-dom@18.2.0)(react@18.2.0)
@@ -255,6 +255,13 @@ packages:
     engines: {node: '>=6.9.0'}
     dependencies:
       regenerator-runtime: 0.13.11
+
+  /@babel/runtime@7.22.5:
+    resolution: {integrity: sha512-ecjvYlnAaZ/KVneE/OdKYBYfgXV3Ptu6zQWmgEF7vwKhQnvVS6bjMD2XYgj+SNvQ1GfK/pjgokfPkC/2CO8CuA==}
+    engines: {node: '>=6.9.0'}
+    dependencies:
+      regenerator-runtime: 0.13.11
+    dev: false
 
   /@babel/template@7.20.7:
     resolution: {integrity: sha512-8SegXApWe6VoNw0r9JHpSteLKTpTiLZ4rMlGIm9JQ18KiCtyQiAMEazujAHrUS5flrcqYZa75ukev3P6QmUwUw==}
@@ -1158,7 +1165,7 @@ packages:
     resolution: {integrity: sha512-fnULvOpxnC5/Vg3NCiWelDsLiUc9bRwAPs/+LfTLNvetFCtCTN+yQz15C/fs4AwX1R9K5GLtLfn8QW+dWisaAw==}
     engines: {node: '>=0.11'}
     dependencies:
-      '@babel/runtime': 7.21.5
+      '@babel/runtime': 7.22.5
     dev: false
 
   /debug@3.2.7:
@@ -2276,8 +2283,8 @@ packages:
     dependencies:
       yallist: 4.0.0
 
-  /lucide-react@0.105.0-alpha.4(react@18.2.0):
-    resolution: {integrity: sha512-QclWOzKYj7sDW33jTQK4enmxL1LmI2SHFqEEP56EWhvs4mmlbbFe6ALYcdcdGysNISNovEbH5WBHg8tN5DLn0w==}
+  /lucide-react@0.252.0(react@18.2.0):
+    resolution: {integrity: sha512-98hUdm23F3YlC3UN4mzv1FAsWr81YYdxF31cYhm19c51FwOph4dn5B4NjKp45UXBiR1Xx+cKrdmSIZX0ldS8zw==}
     peerDependencies:
       react: ^16.5.1 || ^17.0.0 || ^18.0.0
     dependencies:
