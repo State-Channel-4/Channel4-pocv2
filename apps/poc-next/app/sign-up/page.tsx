@@ -97,19 +97,20 @@ const CreateAccount = () => {
           <Button
             variant="outline"
             disabled={isLoading}
+            loading={isLoading}
+            loadingText="Generating key..."
             onClick={clickDownloadKeyHandler}
             className="rounded-full border-green-500 py-6 text-green-500"
           >
             Download my private key
           </Button>
-          <Button
+          {isKeyDownloaded && <Button
             variant="outline"
-            disabled={!isKeyDownloaded && isLoading}
             onClick={clickAllDoneHandler}
             className="mt-4 rounded-full border-green-500 py-6 text-green-500 hover:border-green-500"
           >
             All done
-          </Button>
+          </Button>}
         </div>
       ) : (
         <div className="flex flex-col items-start space-y-5">
