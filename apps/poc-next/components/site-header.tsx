@@ -4,14 +4,22 @@ import Link from "next/link"
 import { usePasswordStore } from "@/store/password"
 
 import { siteConfig } from "@/config/site"
-import { buttonVariants } from "@/components/ui/button"
+import { Button, buttonVariants } from "@/components/ui/button"
 import { Icons } from "@/components/icons"
 import { MainNav } from "@/components/main-nav"
 
 import { SecondaryNav } from "./secondary-nav"
 
 export function SiteHeader() {
-  const { password, token, userId } = usePasswordStore()
+  const { password, token, userId, updatePassword, updateToken, updateUserId } =
+    usePasswordStore()
+
+  const onLogOutClickHandler = () => {
+    updatePassword(null)
+    updateToken(null)
+    updateUserId(null)
+  }
+
   return (
     <header className="bg-background w-full border-b">
       <div className="container flex h-16 items-center space-x-4 sm:justify-between sm:space-x-0">
@@ -49,8 +57,12 @@ export function SiteHeader() {
               </div>
             </Link>
             {/* <ThemeToggle /> */}
-            {!(password && userId && token) && (
+            {!(password && userId && token) ? (
               <SecondaryNav items={siteConfig.secondaryNav} />
+            ) : (
+              <Button variant="ghost" onClick={onLogOutClickHandler}>
+                <Icons.logout className="h-5 w-5" />
+              </Button>
             )}
           </nav>
         </div>
