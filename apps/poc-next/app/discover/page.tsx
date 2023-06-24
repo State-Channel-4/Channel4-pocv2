@@ -1,15 +1,22 @@
-"use client"
+"use client";
 
-import { useEffect, useRef, useState } from "react"
-import Link from "next/link"
-import { useEncryptedStore } from "@/store/encrypted"
-import { usePasswordStore } from "@/store/password"
-import { C4Content, TagMap } from "@/types"
-import { LinkIcon, ThumbsUpIcon } from "lucide-react"
-import useSWR from "swr"
+import { useEffect, useRef, useState } from "react";
+import Link from "next/link";
+import { useEncryptedStore } from "@/store/encrypted";
+import { usePasswordStore } from "@/store/password";
+import { C4Content, TagMap } from "@/types";
+import { LinkIcon, ThumbsUpIcon } from "lucide-react";
+import useSWR from "swr";
 
-import { cn } from "@/lib/utils"
+
+
+import { cn } from "@/lib/utils";
 import { Button, buttonVariants } from "@/components/ui/button"
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover"
 import TagList from "@/components/ui/tag-list"
 
 import SiteFrame from "./SiteFrame"
@@ -95,8 +102,10 @@ const Discover = () => {
   const changeActiveContent = () => {
     if (!data) return
     setActiveContent(data.urls[mixIndex + 1])
-    if (mixIndex + 1 === data.urls.length - 1) { // If the next item is the last item in the mix
-      if (data.urls.length === currentLimit) { // If the urls returned from the API is equal to the limit there might be more items
+    if (mixIndex + 1 === data.urls.length - 1) {
+      // If the next item is the last item in the mix
+      if (data.urls.length === currentLimit) {
+        // If the urls returned from the API is equal to the limit there might be more items
         setCurrentPage((prev) => prev + 1)
         setShouldFetch(true)
       }
@@ -151,9 +160,9 @@ const Discover = () => {
               by {activeContent.submittedBy}
             </p>
             <p className="p-2"></p>
-            {/* Like button */}
             <div className="flex items-center gap-2">
-              {password && token && userId && (
+              {/* Like button */}
+              {password && token && userId ? (
                 <button
                   className="bg-primary/20 hover:bg-primary/10 text-primary/70 group inline-flex items-center gap-2 self-start rounded-full px-4 py-2 text-sm transition-all duration-300"
                   onClick={(e) => likeOrUnlikeActiveContent(activeContent._id)}
@@ -172,6 +181,27 @@ const Discover = () => {
                   <p>•</p>
                   <p>{activeContent.likes}</p>
                 </button>
+              ) : (
+                <Popover>
+                  <PopoverTrigger>
+                    <button className="bg-primary/20 hover:bg-primary/10 text-primary/70 group inline-flex items-center gap-2 self-start rounded-full px-4 py-2 text-sm transition-all duration-300">
+                      <ThumbsUpIcon size={16} aria-label="Like" />
+                      <p className="text-primary">{"Like"}</p>
+                      <p>•</p>
+                      <p>{activeContent.likes}</p>
+                    </button>
+                  </PopoverTrigger>
+                  <PopoverContent
+                    className="flex px-2 py-1 w-full bg-c4-gradient-blue rounded-xl"
+                    side="top"
+                  >
+                    <Link href="/sign-in" passHref>
+                      <Button variant={"link"} size={"sm"}>
+                        Sign in to like
+                      </Button>
+                    </Link>
+                  </PopoverContent>
+                </Popover>
               )}
               <Link href={activeContent.url} passHref target="__blank">
                 <Button variant={"link"}>
