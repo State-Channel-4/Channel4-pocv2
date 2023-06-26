@@ -35,7 +35,7 @@ const SignIn = () => {
       const signedMessage = await wallet.signMessage(
         process.env.NEXT_PUBLIC_API_LOGIN_SECRET!
       )
-      const { user, token } = await fetch(
+      const { user, token, message } = await fetch(
         process.env.NEXT_PUBLIC_API_URL + "/login",
         {
           method: "POST",
@@ -43,14 +43,19 @@ const SignIn = () => {
           body: JSON.stringify({ signedMessage }),
         }
       ).then((response) => response.json())
+      // handle any server error messages
+      if (message) throw new Error(message)
 
       updateUserId(user._id)
       updateToken(token)
       router.push(siteConfig.links.me)
     } catch (error: any) {
-      console.log(error.message)
       if (error.message.includes("incorrect password")) {
         setError("Incorrect password. Please try again.")
+      } else if (error.message.includes("User not found")) {
+        setError(
+          "User not found in the current database. Please delete your local key and try again."
+        )
       } else {
         console.log(error.message)
         setError("Something went wrong. Check the console for more details.")
