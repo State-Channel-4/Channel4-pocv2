@@ -1,12 +1,19 @@
-import { C4Content, TagMap } from "@/types"
-import { Wallet } from "ethers"
-import { Fetcher } from "swr"
+import { C4Content, TagMap } from "@/types";
+import { Wallet } from "ethers";
+import { Fetcher } from "swr";
+
+
 
 import { getRawTransactionToSign } from "@/lib/utils"
 
-export const getMix: Fetcher<{ urls: C4Content[] }, TagMap> = (tags) => {
+export const getMix: Fetcher<
+  { urls: C4Content[] },
+  { tags: TagMap; page: number; limit?: number }
+> = ({ tags, limit = "10", page }) => {
   const tagQueries = new URLSearchParams()
   tags.forEach((tag) => tagQueries.append("tags", tag._id))
+  tagQueries.append("page", page.toString() || "1")
+  tagQueries.append("limit", limit.toString() || "10")
   return fetch(
     `${process.env.NEXT_PUBLIC_API_URL}/mix?${tagQueries.toString()}`
   ).then((response) => response.json())

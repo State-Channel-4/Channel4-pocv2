@@ -21,19 +21,26 @@ const TagList = ({ tags, title, selectable = false }: TagListProps) => {
   const [selectedTags, setSelectedTags] = useState<TagMap>(new Map())
 
   const handleSelectedTags = (selectedTag: Tag) => {
-    if (selectedTags.has(selectedTag._id)) {
-      selectedTags.delete(selectedTag._id)
-      setSelectedTags(new Map(selectedTags))
+    const _selectedTags = selectedTags
+    if (_selectedTags.has(selectedTag._id)) {
+      _selectedTags.delete(selectedTag._id)
+      setSelectedTags(_selectedTags)
     } else {
-      selectedTags.set(selectedTag._id, selectedTag)
-      setSelectedTags(new Map(selectedTags))
+      _selectedTags.set(selectedTag._id, selectedTag)
+      setSelectedTags(new Map(_selectedTags))
     }
   }
 
   const handleDiscover = () => {
     sessionStorage.setItem(
       "c4.tags",
-      JSON.stringify(Array.from(selectedTags.entries()))
+      JSON.stringify(
+        Array.from(
+          selectedTags.size === 0
+            ? new Map(tags).entries()
+            : selectedTags.entries()
+        )
+      )
     )
     router.push(siteConfig.links.discover)
   }
@@ -90,7 +97,6 @@ const TagList = ({ tags, title, selectable = false }: TagListProps) => {
               buttonVariants({ size: "lg" }),
               "bg-c4-gradient-main font-bold transition hover:scale-105"
             )}
-            disabled={selectedTags.size === 0}
             onClick={() => handleDiscover()}
           >
             Start your journey ✨

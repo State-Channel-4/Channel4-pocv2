@@ -48,7 +48,13 @@ const SignIn = () => {
       updateToken(token)
       router.push(siteConfig.links.me)
     } catch (error: any) {
-      setError(error.message)
+      console.log(error.message)
+      if (error.message.includes("incorrect password")) {
+        setError("Incorrect password. Please try again.")
+      } else {
+        console.log(error.message)
+        setError("Something went wrong. Check the console for more details.")
+      }
       setTimeout(() => {
         setError(null)
       }, 5000)
@@ -136,6 +142,7 @@ const SignIn = () => {
           </div>
           <Button
             variant="outline"
+            loading={isLoading}
             disabled={isLoading}
             onClick={clickLetMeInHandler}
             className="w-full rounded-full border-green-500 py-6 text-green-500"
@@ -144,6 +151,7 @@ const SignIn = () => {
           </Button>
           <Button
             variant="outline"
+            loading={isLoading}
             disabled={isLoading}
             onClick={clickDeleteHandler}
             className="w-full rounded-full border-transparent py-6 text-green-500"
@@ -155,6 +163,7 @@ const SignIn = () => {
         <div className="flex flex-col justify-center">
           <Button
             variant="outline"
+            loading={isLoading}
             disabled={isLoading}
             onClick={clickStartJourneyHandler}
             className="rounded-full border-green-500 py-6 text-green-500"
@@ -172,6 +181,7 @@ const SignIn = () => {
               />
               <Button
                 variant="outline"
+                loading={isLoading}
                 disabled={isLoading}
                 onClick={clickLoadKeyHandler}
                 className="rounded-full border-green-500 py-6 text-green-500"
@@ -180,6 +190,7 @@ const SignIn = () => {
               </Button>
               <Button
                 variant="outline"
+                loading={isLoading}
                 disabled={isLoading}
                 onClick={clickCancelKeyHandler}
                 className="mt-4 rounded-full border-transparent py-6 text-green-500 hover:border-green-500"
@@ -191,6 +202,7 @@ const SignIn = () => {
             <>
               <Button
                 variant="outline"
+                loading={isLoading}
                 disabled={isLoading}
                 onClick={clickAlreadyHaveKeyHandler}
                 className="mt-4 rounded-full border-transparent py-6 text-green-500 hover:border-green-500"

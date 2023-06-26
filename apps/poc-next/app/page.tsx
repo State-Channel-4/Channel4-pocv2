@@ -32,8 +32,7 @@ export default async function IndexPage() {
           Your journey starts here.
         </h1>
         <p className="text-foreground/70 max-w-[700px] text-lg sm:text-xl">
-          Start by selecting tags that interest you. We&apos;ll use these tags
-          to generate a randomized feed of content for you.
+          Get ready to see random content from all over the internet. You can choose tags first or just click the button below to get started.
         </p>
       </div>
       <TagList
