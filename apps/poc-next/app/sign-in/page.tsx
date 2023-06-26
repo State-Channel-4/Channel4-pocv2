@@ -22,12 +22,14 @@ const SignIn = () => {
   const [hasAKey, setHasAKey] = useState(false)
   const [key, setKey] = useState<string | null>(null)
   const [encryptedExists, setEncryptedExists] = useState(false)
+  const [isLoading, setIsLoading] = useState(false)
 
   const onPasswordChangeHandler = (e: { target: { value: string } }) => {
     updatePassword(e.target.value)
   }
 
   const clickLetMeInHandler = async () => {
+    setIsLoading(true)
     try {
       const wallet = Wallet.fromEncryptedJsonSync(encrypted!, password!)
       const signedMessage = await wallet.signMessage(
@@ -46,27 +48,40 @@ const SignIn = () => {
       updateToken(token)
       router.push(siteConfig.links.me)
     } catch (error: any) {
-      setError(error.message)
+      console.log(error.message)
+      if (error.message.includes("incorrect password")) {
+        setError("Incorrect password. Please try again.")
+      } else {
+        console.log(error.message)
+        setError("Something went wrong. Check the console for more details.")
+      }
       setTimeout(() => {
         setError(null)
       }, 5000)
     }
+    setIsLoading(false)
   }
 
   const clickDeleteHandler = () => {
+    setIsLoading(true)
     updateEncrypted(null)
     updatePassword(null)
+    updateUserId(null)
+    updateToken(null)
     setHasAKey(false)
     setKey(null)
     setEncryptedExists(false)
+    setIsLoading(false)
   }
 
   const clickStartJourneyHandler = () => {
+    setIsLoading(true)
     if (encrypted) {
       setEncryptedExists(true)
     } else {
       router.push(siteConfig.links.signUp)
     }
+    setIsLoading(false)
   }
 
   const onLoadKeyChangeHandler = (e: { target: { value: string } }) => {
@@ -74,18 +89,24 @@ const SignIn = () => {
   }
 
   const clickLoadKeyHandler = () => {
+    setIsLoading(true)
     updateEncrypted(key)
     updatePassword(null)
     setEncryptedExists(true)
+    setIsLoading(false)
   }
 
   const clickCancelKeyHandler = () => {
+    setIsLoading(true)
     setHasAKey(false)
     setKey(null)
+    setIsLoading(false)
   }
 
   const clickAlreadyHaveKeyHandler = () => {
+    setIsLoading(true)
     setHasAKey(true)
+    setIsLoading(false)
   }
 
   return (
@@ -121,6 +142,8 @@ const SignIn = () => {
           </div>
           <Button
             variant="outline"
+            loading={isLoading}
+            disabled={isLoading}
             onClick={clickLetMeInHandler}
             className="w-full rounded-full border-green-500 py-6 text-green-500"
           >
@@ -128,6 +151,8 @@ const SignIn = () => {
           </Button>
           <Button
             variant="outline"
+            loading={isLoading}
+            disabled={isLoading}
             onClick={clickDeleteHandler}
             className="w-full rounded-full border-transparent py-6 text-green-500"
           >
@@ -138,6 +163,8 @@ const SignIn = () => {
         <div className="flex flex-col justify-center">
           <Button
             variant="outline"
+            loading={isLoading}
+            disabled={isLoading}
             onClick={clickStartJourneyHandler}
             className="rounded-full border-green-500 py-6 text-green-500"
           >
@@ -154,6 +181,8 @@ const SignIn = () => {
               />
               <Button
                 variant="outline"
+                loading={isLoading}
+                disabled={isLoading}
                 onClick={clickLoadKeyHandler}
                 className="rounded-full border-green-500 py-6 text-green-500"
               >
@@ -161,6 +190,8 @@ const SignIn = () => {
               </Button>
               <Button
                 variant="outline"
+                loading={isLoading}
+                disabled={isLoading}
                 onClick={clickCancelKeyHandler}
                 className="mt-4 rounded-full border-transparent py-6 text-green-500 hover:border-green-500"
               >
@@ -171,6 +202,8 @@ const SignIn = () => {
             <>
               <Button
                 variant="outline"
+                loading={isLoading}
+                disabled={isLoading}
                 onClick={clickAlreadyHaveKeyHandler}
                 className="mt-4 rounded-full border-transparent py-6 text-green-500 hover:border-green-500"
               >

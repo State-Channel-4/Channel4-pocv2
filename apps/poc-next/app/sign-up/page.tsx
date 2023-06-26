@@ -13,7 +13,7 @@ import { Button } from "@/components/ui/button"
 import BustOfWomanWithFlowers from "../../assets/bust-of-woman-with-flowers.svg"
 import Channel4IconBlack from "../../assets/channel-4-icon-black.svg"
 
-const CreateAccount = () => {
+const SignUp = () => {
   const router = useRouter()
   const [isKeyDownloaded, setIsKeyDownloaded] = useState(false)
   const [isWalletCreated, setIsWalletCreated] = useState(false)
@@ -21,8 +21,10 @@ const CreateAccount = () => {
     usePasswordStore()
   const [error, setError] = useState<string | null>(null)
   const { encrypted, createEncrypted } = useEncryptedStore()
+  const [isLoading, setIsLoading] = useState(false)
 
   const clickDownloadKeyHandler = async () => {
+    setIsLoading(true)
     try {
       const element = document.createElement("a")
       const file = new Blob([encrypted!], { type: "text/plain" })
@@ -34,10 +36,13 @@ const CreateAccount = () => {
     } catch (error: any) {
       setError(error.message)
     }
+    setIsLoading(false)
   }
 
   const clickAllDoneHandler = () => {
+    setIsLoading(true)
     router.push(siteConfig.links.home)
+    setIsLoading(false)
   }
 
   const onPasswordChangeHandler = (e: { target: { value: string } }) => {
@@ -45,6 +50,7 @@ const CreateAccount = () => {
   }
 
   const clickCreateAccountHandler = async () => {
+    setIsLoading(true)
     const encryptedWallet = await createEncrypted(password!)
     if (encryptedWallet) {
       setIsWalletCreated(true)
@@ -62,9 +68,10 @@ const CreateAccount = () => {
       updateToken(token)
     } else {
       setError(
-        "There is already a wallet created internally. Please delete local storage and try again."
+        "There is already a wallet created internally. Please login and delete it to create a new one."
       )
     }
+    setIsLoading(false)
   }
 
   return (
@@ -89,19 +96,23 @@ const CreateAccount = () => {
         <div>
           <Button
             variant="outline"
+            disabled={isLoading}
+            loading={isLoading}
+            loadingText="Generating key..."
             onClick={clickDownloadKeyHandler}
             className="rounded-full border-green-500 py-6 text-green-500"
           >
             Download my private key
           </Button>
-          <Button
-            variant="outline"
-            disabled={!isKeyDownloaded}
-            onClick={clickAllDoneHandler}
-            className="mt-4 rounded-full border-green-500 py-6 text-green-500 hover:border-green-500"
-          >
-            All done
-          </Button>
+          {isKeyDownloaded && (
+            <Button
+              variant="outline"
+              onClick={clickAllDoneHandler}
+              className="mt-4 rounded-full border-green-500 py-6 text-green-500 hover:border-green-500"
+            >
+              All done
+            </Button>
+          )}
         </div>
       ) : (
         <div className="flex flex-col items-start space-y-5">
@@ -116,6 +127,8 @@ const CreateAccount = () => {
           </div>
           <Button
             variant="outline"
+            loading={isLoading}
+            disabled={isLoading}
             onClick={clickCreateAccountHandler}
             className="w-full rounded-full border-green-500 py-6 text-green-500"
           >
@@ -127,4 +140,4 @@ const CreateAccount = () => {
   )
 }
 
-export default CreateAccount
+export default SignUp

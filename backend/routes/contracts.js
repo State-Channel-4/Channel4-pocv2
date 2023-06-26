@@ -55,58 +55,15 @@ router.post("/user", cc.create_user);
  *       500:
  *         description: Server error
  */
-/**
- * @swagger
- * /api/login:
- *   post:
- *     summary: Login a user
- *     tags: [Users]
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             properties:
- *               signedMessage:
- *                 type: string
- *     responses:
- *       200:
- *         description: The user was logged in successfully
- *       404:
- *         description: User not found
- *       500:
- *         description: Server error
- */
 router.post("/login", cc.login);
 
 // get users
 router.get("/users", authenticate, cc.get_all_users);
 
+
 // get specific user
 router.get("/user/:id", authenticate, cc.get_specific_user);
 
-/**
- * @swagger
- * /api/recover_account:
- *   post:
- *     summary: Recover account using mnemonic phrase
- *     tags: [Users]
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             properties:
- *               mnemonic:
- *                 type: string
- *     responses:
- *       200:
- *         description: The account was recovered successfully
- *       400:
- *         description: Error in recovering account
- */
 /**
  * @swagger
  * /api/recover_account:
@@ -194,61 +151,8 @@ router.put("/like/:id", authenticate, verifySignedFunctionMessage, cc.like);
  *       500:
  *         description: Server error
  */
-/**
- * @swagger
- * /api/url:
- *   post:
- *     summary: Submit a new url
- *     tags: [URL]
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             properties:
- *               title:
- *                 type: string
- *               url:
- *                 type: string
- *               submittedBy:
- *                 type: string
- *               tags:
- *                 type: array
- *                 items:
- *                   type: string
- *     responses:
- *       201:
- *         description: The url was submitted successfully
- *       400:
- *         description: URL already exists
- *       500:
- *         description: Server error
- */
 // submit url
 router.post("/url", authenticate, verifySignedFunctionMessage, cc.submit_url);
-
-/**
- * @swagger
- * /api/url:
- *   delete:
- *     summary: Delete a url
- *     tags: [URL]
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             properties:
- *               id:
- *                 type: string
- *     responses:
- *       200:
- *         description: The url was deleted successfully
- *       500:
- *         description: Server error
- */
 
 /**
  * @swagger
@@ -297,55 +201,8 @@ router.delete("/url", authenticate, verifySignedMessage, cc.delete_url);
  *       500:
  *         description: Server error
  */
-/**
- * @swagger
- * /api/tag:
- *   post:
- *     summary: Create a new tag
- *     tags: [Tag]
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             properties:
- *               name:
- *                 type: string
- *               createdBy:
- *                 type: string
- *     responses:
- *       200:
- *         description: The tag was created successfully
- *       500:
- *         description: Server error
- */
 // creating tags
 router.post("/tag", authenticate, verifySignedFunctionMessage, cc.create_tag);
-
-/**
- * @swagger
- * /api/url/tag:
- *   get:
- *     summary: Fetch URLs by their tags
- *     tags: [URL, Tag]
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             properties:
- *               tags:
- *                 type: array
- *                 items:
- *                   type: string
- *     responses:
- *       200:
- *         description: The urls were fetched successfully
- *       500:
- *         description: Server error
- */
 
 /**
  * @swagger
