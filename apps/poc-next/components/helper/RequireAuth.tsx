@@ -1,4 +1,6 @@
-import { useRouter } from "next/navigation"
+"use client"
+
+import Link from "next/link"
 import { usePasswordStore } from "@/store/password"
 
 import { siteConfig } from "@/config/site"
@@ -15,10 +17,18 @@ interface Props {
 
 const RequireAuth = ({ children }: Props) => {
   const { userId, token } = usePasswordStore()
-  const router = useRouter()
   if (!token || !userId) {
-    router.push(siteConfig.links.signIn)
-    return null
+    return (
+      <div className="mx-7 my-10 flex flex-col justify-center lg:container items-center text-center">
+        <h2 className="my-5">
+          Sign in{" "}
+          <Link href={siteConfig.links.signIn} className="text-green-500">
+            here
+          </Link>{" "}
+          to view this section
+        </h2>
+      </div>
+    )
   } else {
     return children
   }
