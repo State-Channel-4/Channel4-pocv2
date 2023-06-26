@@ -34,12 +34,19 @@ const get_all_users = async (req, res) => {
     const page = parseInt(req.query.page) || 1; // Get the page number from query parameters, default to 1 if not provided
     const limit = parseInt(req.query.limit) || 10; // Get the limit from query parameters, default to 10 if not provided
 
-    const users = await User.find()
-      .skip((page - 1) * limit) // Skip the appropriate number of documents based on the page and limit
-      .limit(limit); // Limit the number of documents returned per page
+    const [users, count] = await Promise.all([
+      User.find()
+        .skip((page - 1) * limit) // Skip the appropriate number of documents based on the page and limit
+        .limit(limit), // Limit the number of documents returned per page
+      User.countDocuments()
+    ]);
+
+    const totalPages = Math.ceil(count / limit);
+    const hasNextPage = page < totalPages;
 
     res.status(200).json({
-      users: users
+      users: users,
+      hasNextPage
     });
   } catch (error) {
     res.status(500).json({ error: 'Error retrieving users' });
@@ -262,17 +269,25 @@ const getUrlsByTags = async (req, res) => {
     const page = parseInt(req.query.page) || 1; // Get the page number from query parameters, default to 1 if not provided
     const limit = parseInt(req.query.limit) || 10; // Get the limit from query parameters, default to 10 if not provided
 
-    const urls = await Url.find({ tags: { $in: tags } })
-      .skip((page - 1) * limit) // Skip the appropriate number of documents based on the page and limit
-      .limit(limit); // Limit the number of documents returned per page
+    const [urls, count] = await Promise.all([
+      Url.find({ tags: { $in: tags } })
+        .skip((page - 1) * limit) // Skip the appropriate number of documents based on the page and limit
+        .limit(limit), // Limit the number of documents returned per page
+      Url.countDocuments({ tags: { $in: tags } })
+    ]);
+
+    const totalPages = Math.ceil(count / limit);
+    const hasNextPage = page < totalPages;
 
     res.status(200).json({
-      urls: urls
+      urls: urls,
+      hasNextPage
     });
   } catch (error) {
     res.status(500).json({ error: 'Error retrieving URLs by tags' });
   }
 };
+
 
 // Helper function to shuffle an array
 // Fisher-Yates algorithm O(n)
@@ -291,11 +306,18 @@ const mix = async (req, res) => {
     const { tags, page = 1, limit = 10 } = req.query;
     console.log("tags : page : limit ", tags, page, limit)
     // Fetch the URLs based on the provided tags
-    const urls = await fetchUrlsByTags(tags, page, limit);
+    const [urls, count] = await Promise.all([
+      fetchUrlsByTags(tags, page, limit),
+      Url.countDocuments({ tags: { $in: tags } })
+    ]);
 
     // Randomize the order of the URLs
     const randomizedUrls = shuffleArray(urls);
-    return res.status(200).json({ urls: randomizedUrls });
+
+    const totalPages = Math.ceil(count / limit);
+    const hasNextPage = page < totalPages;
+
+    return res.status(200).json({ urls: randomizedUrls, hasNextPage });
   } catch (error) {
     return res.status(500).json({ error: error.message });
   }
