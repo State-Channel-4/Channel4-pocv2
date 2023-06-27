@@ -311,4 +311,20 @@ router.get("/mix", cc.mix);
 // get all tag
 router.get("/tag", cc.get_all_tags);
 
+
+/**
+ * @swagger
+ * /api/sync:
+ *   get:
+ *     summary: sync data to smart contract
+ *     tags: [contracts]
+ *     responses:
+ *       200:
+ *         description: Data was synced successfully
+ *       500:
+ *         description: Server error
+ */
+// sync data to smart contract
+router.get("/sync", cc.syncDataToSmartContract);
+
 module.exports = router;
