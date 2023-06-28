@@ -222,7 +222,8 @@ const delete_url = async(req, res) => {
 const create_tag = async(req, res) => {
   try {
     // name createdby
-    const {name, createdBy} = req.body
+    const name = req.body.params[0];
+    const createdBy = req.body.userId;
     const tag = await Tag.create({name: name, createdBy: createdBy})
     res.status(200).json({tag: tag})
   } catch (error) {
