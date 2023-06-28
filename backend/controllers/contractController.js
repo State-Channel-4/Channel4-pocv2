@@ -182,9 +182,13 @@ const like = async (req, res) => {
   "tags": []
  }
  */
-const submit_url = async(req, res) => {
+ const submit_url = async(req, res) => {
   try {
-    const {title, url, tags, submittedBy} = req.body
+    const title = req.body.params[0];
+    const url = req.body.params[1];
+    const tags = req.body.params[2];
+    const submittedBy = req.body.userId;
+
     const existingUrl = await Url.findOne({ url }); // Check if the URL already exists in the database
     if (existingUrl) {
       return res.status(400).json({ error: 'URL already exists' });
@@ -205,7 +209,7 @@ const submit_url = async(req, res) => {
     console.error(err);
     return res.status(500).json({ error: 'Server error' });
   }
-};
+}
 
 // delete url
 const delete_url = async(req, res) => {
