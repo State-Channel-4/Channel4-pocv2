@@ -204,6 +204,12 @@ const like = async (req, res) => {
       // Save the tag document to the database
       await tag_doc.save()
     }
+
+    // Add the URL to the user's submittedBy array
+    const user = await User.findById(submittedBy)
+    user.submittedUrls.push(newUrl.id)
+    await user.save()
+
     return res.status(201).json(newUrl);
   } catch (err) {
     console.error(err);
