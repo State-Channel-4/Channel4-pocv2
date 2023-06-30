@@ -156,7 +156,6 @@ const SignIn = () => {
           </Button>
           <Button
             variant="outline"
-            loading={isLoading}
             disabled={isLoading}
             onClick={clickDeleteHandler}
             className="w-full rounded-full border-transparent py-6 text-green-500"
