@@ -56,6 +56,21 @@ export function SiteHeader() {
                 <span className="sr-only">Twitter</span>
               </div>
             </Link>
+            <Link
+              href={siteConfig.links.discord}
+              target="_blank"
+              rel="noreferrer"
+            >
+              <div
+                className={buttonVariants({
+                  size: "sm",
+                  variant: "ghost",
+                })}
+              >
+                <Icons.discord className="h-5 w-5 fill-current" />
+                <span className="sr-only">Discord</span>
+              </div>
+            </Link>
             {/* <ThemeToggle /> */}
             {!(password && userId && token) ? (
               <SecondaryNav items={siteConfig.secondaryNav} />
