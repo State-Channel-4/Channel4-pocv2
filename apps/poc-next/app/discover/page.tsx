@@ -1,16 +1,14 @@
-"use client";
+"use client"
 
-import { useEffect, useRef, useState } from "react";
-import Link from "next/link";
-import { useEncryptedStore } from "@/store/encrypted";
-import { usePasswordStore } from "@/store/password";
-import { C4Content, TagMap } from "@/types";
-import { LinkIcon, ThumbsUpIcon } from "lucide-react";
-import useSWR from "swr";
+import { useEffect, useRef, useState } from "react"
+import Link from "next/link"
+import { useEncryptedStore } from "@/store/encrypted"
+import { usePasswordStore } from "@/store/password"
+import { C4Content, TagMap } from "@/types"
+import { LinkIcon, ThumbsUpIcon } from "lucide-react"
+import useSWR from "swr"
 
-
-
-import { cn } from "@/lib/utils";
+import { cn } from "@/lib/utils"
 import { Button, buttonVariants } from "@/components/ui/button"
 import {
   Popover,

@@ -204,6 +204,12 @@ const like = async (req, res) => {
       // Save the tag document to the database
       await tag_doc.save()
     }
+
+    // Add the URL to the user's submittedBy array
+    const user = await User.findById(submittedBy)
+    user.submittedUrls.push(newUrl.id)
+    await user.save()
+
     return res.status(201).json(newUrl);
   } catch (err) {
     console.error(err);
@@ -226,7 +232,8 @@ const delete_url = async(req, res) => {
 const create_tag = async(req, res) => {
   try {
     // name createdby
-    const {name, createdBy} = req.body
+    const name = req.body.params[0];
+    const createdBy = req.body.userId;
     const tag = await Tag.create({name: name, createdBy: createdBy})
     res.status(200).json({tag: tag})
   } catch (error) {
