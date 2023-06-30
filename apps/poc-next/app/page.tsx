@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useState } from "react"
 import { Tag, TagMap } from "@/types"
 import useSWR from "swr"
 
@@ -20,19 +20,22 @@ const getTags = async () => {
 
 export default async function IndexPage() {
   const [tags, setTags] = useState<TagMap>(new Map())
-  const { data } = useSWR("tag", getTags)
 
-  useEffect(() => {
-    let _tags: TagMap = new Map()
-    if (data && "tags" in data) {
-      data.tags.forEach((tag: Tag) => {
-        _tags.set(tag._id, tag)
-      })
-      setTags(_tags)
-    } else {
-      _tags = new Map()
-    }
-  }, [data])
+  useSWR("tag", getTags, {
+    revalidateOnFocus: false,
+    revalidateOnReconnect: false,
+    onSuccess: (data) => {
+      let _tags: TagMap = new Map()
+      if (data && "tags" in data) {
+        data.tags.forEach((tag: Tag) => {
+          _tags.set(tag._id, tag)
+        })
+        setTags(_tags)
+      } else {
+        _tags = new Map()
+      }
+    },
+  })
 
   return (
     <section className="container grid items-center gap-6 pb-8 pt-6">
