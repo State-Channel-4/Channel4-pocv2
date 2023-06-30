@@ -33,7 +33,8 @@ export const siteConfig = {
     },
   ],
   links: {
-    twitter: "https://twitter.com/PrivacyScaling",
+    discord: "https://discord.gg/wuPYfbYdXy",
+    twitter: "https://twitter.com/StateChannel_4",
     github: "https://github.com/State-Channel-4/Channel4-pocv2",
     docs: "https://github.com/State-Channel-4/Channel4-pocv2",
     home: "/",
