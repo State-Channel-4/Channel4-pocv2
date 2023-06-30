@@ -1,7 +1,5 @@
-import "@/styles/globals.css";
-import { Metadata } from "next";
-
-
+import "@/styles/globals.css"
+import { Metadata } from "next"
 
 import { siteConfig } from "@/config/site"
 import { fontSans } from "@/lib/fonts"
@@ -41,7 +39,7 @@ export default function RootLayout({ children }: RootLayoutProps) {
             fontSans.variable
           )}
         >
-          <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+          <ThemeProvider attribute="class" defaultTheme="dark" enableSystem>
             <div className="relative flex h-screen flex-col">
               <SiteHeader />
               <div className="flex-1">{children}</div>

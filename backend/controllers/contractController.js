@@ -182,7 +182,7 @@ const like = async (req, res) => {
   "tags": []
  }
  */
-const submit_url = async(req, res) => {
+ const submit_url = async(req, res) => {
   try {
     const title = req.body.params[0];
     const url = req.body.params[1];
@@ -204,12 +204,18 @@ const submit_url = async(req, res) => {
       // Save the tag document to the database
       await tag_doc.save()
     }
+
+    // Add the URL to the user's submittedBy array
+    const user = await User.findById(submittedBy)
+    user.submittedUrls.push(newUrl.id)
+    await user.save()
+
     return res.status(201).json(newUrl);
   } catch (err) {
     console.error(err);
     return res.status(500).json({ error: 'Server error' });
   }
-};
+}
 
 // delete url
 const delete_url = async(req, res) => {
