@@ -39,7 +39,7 @@ const Discover = () => {
   const [mixCompleted, setMixCompleted] = useState<boolean>(false)
   const [userLikes, setUserLikes] = useState<string[]>([])
   const [currentPage, setCurrentPage] = useState<number>(1)
-  const currentLimit = 10
+  const currentLimit = 100
   const [shouldFetch, setShouldFetch] = useState<boolean>(true)
 
   const { data, error, isLoading } = useSWR(
