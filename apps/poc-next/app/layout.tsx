@@ -7,6 +7,8 @@ import { cn } from "@/lib/utils"
 import { SiteHeader } from "@/components/site-header"
 import { ThemeProvider } from "@/components/theme-provider"
 
+import AnalyticWrapper from "./analytics"
+
 export const metadata: Metadata = {
   title: {
     default: siteConfig.name,
@@ -42,7 +44,7 @@ export default function RootLayout({ children }: RootLayoutProps) {
           <ThemeProvider attribute="class" defaultTheme="dark" enableSystem>
             <div className="relative flex h-screen flex-col">
               <SiteHeader />
-              <div className="flex-1">{children}</div>
+              <AnalyticWrapper>{children}</AnalyticWrapper>
             </div>
           </ThemeProvider>
         </body>
