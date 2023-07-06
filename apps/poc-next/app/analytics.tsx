@@ -7,7 +7,7 @@ export default function AnalyticWrapper({
 }: {
   children: React.ReactNode
 }) {
-  useSwetrix("aN8DjCSj9oaz", {
+  useSwetrix(`${process.env.NEXT_PUBLIC_SWETRIX}`, {
     debug: true,
   })
   return <div className="flex-1">{children}</div>
