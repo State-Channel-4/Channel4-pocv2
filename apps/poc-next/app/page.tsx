@@ -5,6 +5,7 @@ import { Tag, TagMap } from "@/types"
 import useSWR from "swr"
 
 import TagList from "@/components/ui/tag-list"
+import { useSwetrix } from "@swetrix/nextjs"
 
 const getTags = async () => {
   try {
@@ -19,6 +20,12 @@ const getTags = async () => {
 }
 
 export default async function IndexPage() {
+
+  // create a variable of string type that has value of NEXT_PUBLIC_SWETRIX_ID
+  const swetrix_id : string = process.env.NEXT_PUBLIC_SWETRIX_ID ?? ""
+
+  useSwetrix(swetrix_id)
+
   const [tags, setTags] = useState<TagMap>(new Map())
 
   useSWR("tag", getTags, {
