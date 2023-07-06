@@ -126,7 +126,7 @@ const SignIn = () => {
         <Image priority src={Channel4IconBlack} alt="Channel 4 icon black" />
       </div>
       <h2 className="my-5">
-        transverse <span className="">random content</span> from all over the
+        traverse <span className="">random content</span> from all over the
         internet.
       </h2>
       <p className="my-5">
