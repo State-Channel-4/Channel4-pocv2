@@ -32,7 +32,7 @@ const create_user = async(req, res) => {
 const get_all_users = async (req, res) => {
   try {
     const page = parseInt(req.query.page) || 1; // Get the page number from query parameters, default to 1 if not provided
-    const limit = parseInt(req.query.limit) || 10; // Get the limit from query parameters, default to 10 if not provided
+    const limit = parseInt(req.query.limit) || 100; // Get the limit from query parameters, default to 100 if not provided
 
     const [users, count] = await Promise.all([
       User.find()
@@ -273,7 +273,7 @@ const getUrlsByTags = async (req, res) => {
   try {
     const tags = req.query.tags || ''; // Get the tags from query parameters
     const page = parseInt(req.query.page) || 1; // Get the page number from query parameters, default to 1 if not provided
-    const limit = parseInt(req.query.limit) || 10; // Get the limit from query parameters, default to 10 if not provided
+    const limit = parseInt(req.query.limit) || 100; // Get the limit from query parameters, default to 100 if not provided
 
     const [urls, count] = await Promise.all([
       Url.find({ tags: { $in: tags } })
@@ -309,7 +309,7 @@ const shuffleArray = (array) => {
 // mix feed
 const mix = async (req, res) => {
   try {
-    const { tags, page = 1, limit = 10 } = req.query;
+    const { tags, page = 1, limit = 100 } = req.query;
     console.log("tags : page : limit ", tags, page, limit)
     // Fetch the URLs based on the provided tags
     const [urls, count] = await Promise.all([

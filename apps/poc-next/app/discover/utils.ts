@@ -9,11 +9,11 @@ import { getRawTransactionToSign } from "@/lib/utils"
 export const getMix: Fetcher<
   { urls: C4Content[] },
   { tags: TagMap; page: number; limit?: number }
-> = ({ tags, limit = "10", page }) => {
+> = ({ tags, limit = "100", page }) => {
   const tagQueries = new URLSearchParams()
   tags.forEach((tag) => tagQueries.append("tags", tag._id))
   tagQueries.append("page", page.toString() || "1")
-  tagQueries.append("limit", limit.toString() || "10")
+  tagQueries.append("limit", limit.toString() || "100")
   return fetch(
     `${process.env.NEXT_PUBLIC_API_URL}/mix?${tagQueries.toString()}`
   ).then((response) => response.json())
