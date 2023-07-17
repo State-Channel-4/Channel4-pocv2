@@ -3,14 +3,14 @@ require('dotenv').config()
 
 // Models
 const { User, Tag, Url } = require('../models/schema');
-
 const { generateToken } = require('../middleware/auth');
 
 
 const create_contract = () => {
-    const provider = new ethers.JsonRpcProvider(process.env.RPC_URL)
-    const contract = new ethers.Contract(process.env.CONTRACT_ADDRESS, process.env.ABI, provider)
-    return contract
+  const provider = new ethers.JsonRpcProvider('https://rpc.sepolia.org')
+  const contract = new ethers.Contract(process.env.CONTRACT_ADDRESS, process.env.ABI, provider)
+  console.log("create_contract : ", contract)
+  return contract
 }
 
 // create user
@@ -332,27 +332,63 @@ const mix = async (req, res) => {
 
 const syncDataToSmartContract = async () => {
   const contract = create_contract();
-  const wallet = new ethers.Wallet(process.env.PRIVATE_KEY, contract.provider);
+  let wallet = new ethers.Wallet(process.env.PRIVATE_KEY);
+  console.log("wallet : ", wallet);
+  const provider = new ethers.JsonRpcProvider('https://rpc.sepolia.org')
+  wallet = wallet.connect(provider);
+  console.log("connected wallet : ", wallet);
   const contractWithSigner = contract.connect(wallet);
+  console.log("wallet sign : ", wallet);
 
   // Sync users
-  const users = await User.find();
-  for (const user of users) {
-      await contractWithSigner.addUser(user.walletAddress);
+  const users = await User.find({ syncedToBlockchain: false });
+  for (let user of users) {
+      await contractWithSigner.createUser(user.walletAddress);
+      user.syncedToBlockchain = true;
+      await user.save();
   }
 
   // Sync URLs
-  const urls = await Url.find().populate('submittedBy');
-  for (const url of urls) {
-      await contractWithSigner.addUrl(url.title, url.url, url.submittedBy.walletAddress, url.id);
+  const urls = await Url.find({ syncedToBlockchain: false }).populate('submittedBy');
+  console.log("urls check :", urls)
+  for (let url of urls) {
+      await contractWithSigner.submitURL(url.title, url.url, url.submittedBy.walletAddress, url.id);
+      url.syncedToBlockchain = true;
+      await url.save();
   }
 
   // Sync tags
-  const allTags = await Tag.find().populate('createdBy');
-  for (const tag of allTags) {
-      await contractWithSigner.addTag(tag.name, tag.createdBy.walletAddress);
+  const allTags = await Tag.find({ syncedToBlockchain: false }).populate('createdBy');
+  for (let tag of allTags) {
+      await contractWithSigner.createTagIfNotExists(tag.name);
+      tag.syncedToBlockchain = true;
+      await tag.save();
   }
 }
+
+async function readFromContract() {
+  const provider = new ethers.JsonRpcProvider('https://rpc.sepolia.org'); // Replace with your network
+    const wallet = new ethers.Wallet(process.env.PRIVATE_KEY);
+    const walletConnected = wallet.connect(provider);
+    
+    const contract = create_contract();
+    
+    // Assume getUsers, getURLs and getTags are your getter methods in contract
+    let urls, tags;
+    try {
+        urls = await contract.getAllURLs();
+        tags = await contract.getAllTags();
+    } catch (err) {
+        console.error(`Failed to call contract: ${err}`);
+    }
+    console.log("urls : ", urls);
+    
+    return {
+        urls: urls,
+        tags: tags
+    };
+}
+
 
 module.exports = {
   create_user,
@@ -367,5 +403,6 @@ module.exports = {
   getUrlsByTags,
   get_all_tags,
   mix,
-  syncDataToSmartContract
+  syncDataToSmartContract,
+  readFromContract
 }

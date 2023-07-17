@@ -327,4 +327,7 @@ router.get("/tag", cc.get_all_tags);
 // sync data to smart contract
 router.get("/sync", cc.syncDataToSmartContract);
 
+router.get("/read", cc.readFromContract)
+
+
 module.exports = router;

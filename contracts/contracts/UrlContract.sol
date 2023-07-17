@@ -43,6 +43,15 @@ contract UrlContract {
         tags.list.push(newTag);
     }
 
+    /// @notice Create a new user
+    /// @param userAddress User's address
+    function createUser(address userAddress) public {
+        require(userAddress != address(0), "Invalid address");
+        require(users[userAddress].numberOfLikedURLs == 0, "User already exists");
+        // user mapping will create a new User struct in storage by default
+        users[userAddress].numberOfLikedURLs = 0;
+    }
+
     /// @notice Save URL in smart contract. Create tags if they don't exist
     /// @dev The function flow is: get url id, create tags (and save url id), save url
     /// @param title URL content title
