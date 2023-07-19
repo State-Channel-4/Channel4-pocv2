@@ -8,11 +8,11 @@ const UserSchema = new mongoose.Schema({
   },
   likedUrls: [{
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'URL',
+    ref: 'Url',
   }],
   submittedUrls: [{
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'URL',
+    ref: 'Url',
   }],
   createdAt: {
     type: Date,
@@ -77,7 +77,7 @@ const TagSchema = new mongoose.Schema({
   },
   urls: [{
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'URL'
+    ref: 'Url'
   }],
   createdBy: {
     type: mongoose.Schema.Types.ObjectId,
